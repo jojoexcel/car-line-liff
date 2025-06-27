@@ -2,53 +2,179 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LIFF Ultimate Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>公務車 QR Code 掃描器</title>
+  <style>
+    /* 現代化的 CSS 樣式 */
+    :root {
+      --primary-color: #00B900;
+      --disabled-color: #BDBDBD;
+      --text-color: #333333;
+      --error-color: #D32F2F;
+      --background-color: #F5F5F5;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: var(--background-color);
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .container {
+      max-width: 400px;
+      width: 100%;
+    }
+    #status {
+      font-size: 1.1em;
+      color: var(--text-color);
+      margin-bottom: 24px;
+      min-height: 40px; /* 避免文字改變時佈局跳動 */
+    }
+    #scanBtn {
+      width: 100%;
+      padding: 16px 32px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: white;
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    #scanBtn:disabled {
+      background-color: var(--disabled-color);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    #scanBtn:not(:disabled):hover {
+      background-color: #009A00;
+    }
+    #error {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: var(--error-color);
+      word-wrap: break-word; /* 讓長字串能換行 */
+      white-space: pre-wrap; /* 保留換行和空格 */
+      background-color: #FFEBEE;
+      border: 1px solid var(--error-color);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>LIFF 終極測試頁面</h1>
-  <p id="status">正在初始化...</p>
-  <div id="error" style="color: red; white-space: pre-wrap;"></div>
+  <div class="container">
+    <div id="status">正在初始化 LIFF 環境...</div>
+    <button id="scanBtn" disabled onclick="scanQrCode()">📷 掃描 QR Code</button>
+    <div id="error" class="hidden"></div>
+  </div>
 
-  <!-- 引用 LIFF SDK -->
+  <!-- 引用最新的 LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   
   <script>
-    // 【關鍵修改】直接在前端寫死您的 LIFF ID
-    const MY_LIFF_ID = "2007626718-yQALkZm8";
+    // 【重要】這個 LIFF ID 將由後端 doGet 函式注入
+    // 在本地測試時，可以手動替換成您的 LIFF ID
+    const myLiffId = "<?= liffId ?>"; 
 
+    // 當頁面完全載入後，執行主函式
+    window.onload = function() {
+      main();
+    };
+
+    /**
+     * 主函式，負責初始化 LIFF
+     */
     async function main() {
-      const statusElement = document.getElementById('status');
-      const errorElement = document.getElementById('error');
-      statusElement.textContent = `正在使用 LIFF ID: ${MY_LIFF_ID} 進行初始化...`;
+      console.log(`[LIFF] Starting initialization with LIFF ID: ${myLiffId}`);
+      document.getElementById('status').textContent = '正在驗證權限...';
       
       try {
-        // 執行初始化
-        await liff.init({ liffId: MY_LIFF_ID });
+        // 初始化 LIFF SDK
+        await liff.init({ liffId: myLiffId });
         
-        // 如果成功，顯示綠色成功訊息
-        statusElement.textContent = '✅ LIFF 初始化成功！';
-        statusElement.style.color = 'green';
-        
-        // 顯示一些有用的資訊
-        errorElement.innerHTML = `
-          登入狀態: ${liff.isLoggedIn()} <br>
-          作業系統: ${liff.getOS()} <br>
-          語言: ${liff.getLanguage()} <br>
-          LINE 版本: ${liff.getLineVersion()}
-        `;
-        
+        // 檢查使用者是否已登入 LINE
+        if (!liff.isLoggedIn()) {
+          console.log('[LIFF] User not logged in. Redirecting to login page...');
+          document.getElementById('status').textContent = '您尚未登入，將為您導向登入頁面...';
+          // 如果未登入，liff.login() 會自動處理頁面跳轉
+          liff.login(); 
+        } else {
+          console.log('[LIFF] Initialization successful and user is logged in.');
+          document.getElementById('status').textContent = '✅ 初始化完成！\n請點擊按鈕掃描車輛上的 QR Code。';
+          // 啟用掃描按鈕
+          document.getElementById('scanBtn').disabled = false;
+        }
       } catch (err) {
-        // 如果失敗，顯示紅色失敗訊息和詳細錯誤
-        statusElement.textContent = '❌ LIFF 初始化失敗！';
-        statusElement.style.color = 'red';
-        errorElement.textContent = JSON.stringify(err, null, 2); // 格式化 JSON 輸出
-        console.error(err); // 在 console 也印出錯誤物件
+        console.error('[LIFF] Initialization failed:', err);
+        document.getElementById('status').textContent = '❌ LIFF 初始化失敗！';
+        document.getElementById('error').textContent = `錯誤詳情：\n${JSON.stringify(err, null, 2)}`;
+        document.getElementById('error').classList.remove('hidden');
       }
     }
 
-    // 執行主函式
-    main();
+    /**
+     * 啟動 QR Code 掃描器並處理後續流程
+     */
+    async function scanQrCode() {
+      try {
+        console.log('[SCAN] Starting QR Code scanner...');
+        // 停用按鈕，防止重複點擊
+        document.getElementById('scanBtn').disabled = true;
+        document.getElementById('status').textContent = '請對準 QR Code...';
+
+        // 呼叫 LIFF 的掃描功能
+        const result = await liff.scanCodeV2();
+        
+        if (result && result.value) {
+          console.log(`[SCAN] Scan successful. Value: ${result.value}`);
+          // 掃描成功後，提示使用者輸入公里數
+          const mileage = prompt(`掃描成功！內容：${result.value}\n\n請輸入目前車輛的公里數 (純數字)：`, "");
+
+          if (mileage !== null && mileage.trim() !== "" && !isNaN(mileage)) {
+            // 使用者輸入了有效的公里數
+            const messageToSend = `#scan_result ${result.value} ${mileage.trim()}`;
+            console.log(`[SEND] Preparing to send message: ${messageToSend}`);
+            document.getElementById('status').textContent = '正在傳送資料...';
+            
+            // 透過 LIFF SDK 將結果以使用者名義發送回聊天室
+            await liff.sendMessages([{ type: 'text', text: messageToSend }]);
+            
+            // 發送成功後，關閉 LIFF 視窗
+            liff.closeWindow();
+          } else {
+            // 使用者取消輸入或輸入無效
+            console.log('[SCAN] User cancelled input or entered invalid mileage.');
+            alert("您取消了輸入，或輸入的格式不正確。");
+            // 重新啟用按鈕，讓使用者可以重試
+            document.getElementById('scanBtn').disabled = false;
+            document.getElementById('status').textContent = '✅ 初始化完成！\n請點擊按鈕掃描車輛上的 QR Code。';
+          }
+        } else {
+          // 使用者可能在掃描介面中點了「取消」
+          console.log('[SCAN] Scanner was closed without a result.');
+          // 重新啟用按鈕
+          document.getElementById('scanBtn').disabled = false;
+          document.getElementById('status').textContent = '✅ 初始化完成！\n請點擊按鈕掃描車輛上的 QR Code。';
+        }
+      } catch (err) {
+        console.error('[SCAN] Error during scan process:', err);
+        alert(`掃描時發生錯誤：\n${err.message}`);
+        // 發生錯誤後，也要重新啟用按鈕
+        document.getElementById('scanBtn').disabled = false;
+        document.getElementById('status').textContent = '掃描失敗，請重試。';
+      }
+    }
   </script>
 </body>
 </html>
