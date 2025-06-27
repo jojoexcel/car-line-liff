@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>LIFF App</title></head>
+<body>
+  <p>正在載入頁面...</p>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const targetPage = params.get('target');
+    const validPages = ['LiffScanner', 'ProfileEditor'];
+    if (targetPage && validPages.includes(targetPage)) {
+      window.location.replace(targetPage + '.html' + window.location.search);
+    } else {
+      window.location.replace('LiffScanner.html' + window.location.search);
+    }
+  </script>
+</body>
+</html>
