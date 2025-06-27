@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- ... (head 內容) ... -->
+</head>
+<body>
+  <h2>修改個人資料</h2>
+  <div id="status"></div>
+  
+  <label>姓名:</label>
+  <input type="text" id="nameInput">
+  
+  <label>電話:</label>
+  <input type="text" id="phoneInput">
+  
+  <button onclick="saveProfile()">儲存變更</button>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    let userId = '';
+    
+    // 頁面載入時初始化 LIFF 並獲取使用者 ID
+    window.onload = async function() {
+      await liff.init({ liffId: "<?= liffId ?>" });
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+      const profile = await liff.getProfile();
+      userId = profile.userId;
+      
+      // (可選) 載入現有資料並填入輸入框
+      google.script.run
+        .withSuccessHandler(fillForm)
+        .withFailureHandler(showError)
+        .getUserProfileFromSheet(userId);
+    };
+
+    function fillForm(user) {
+      if (user) {
+        document.getElementById('nameInput').value = user.name;
+        document.getElementById('phoneInput').value = user.phone;
+      }
+    }
+
+    // 當「儲存」按鈕被點擊時
+    function saveProfile() {
+      const name = document.getElementById('nameInput').value;
+      const phone = document.getElementById('phoneInput').value;
+      
+      document.getElementById('status').textContent = '正在儲存...';
+
+      // 使用 google.script.run 呼叫後端函式
+      google.script.run
+        .withSuccessHandler(onSaveSuccess) // 成功時要執行的前端函式
+        .withFailureHandler(showError)      // 失敗時要執行的前端函式
+        .updateUserProfile(userId, name, phone); // 要呼叫的後端函式，並傳遞參數
+    }
+
+    // 成功回呼函式
+    function onSaveSuccess(message) {
+      document.getElementById('status').textContent = message;
+      // 2秒後關閉視窗
+      setTimeout(() => liff.closeWindow(), 2000);
+    }
+    
+    // 失敗回呼函式
+    function showError(error) {
+      document.getElementById('status').textContent = `錯誤：${error.message}`;
+    }
+  </script>
+</body>
+</html>
