@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIFF Ultimate Test</title>
+</head>
+<body>
+  <h1>LIFF 終極測試頁面</h1>
+  <p id="status">正在初始化...</p>
+  <div id="error" style="color: red; white-space: pre-wrap;"></div>
+
+  <!-- 引用 LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  
+  <script>
+    // 【關鍵修改】直接在前端寫死您的 LIFF ID
+    const MY_LIFF_ID = "2007626718-yQALkZm8";
+
+    async function main() {
+      const statusElement = document.getElementById('status');
+      const errorElement = document.getElementById('error');
+      statusElement.textContent = `正在使用 LIFF ID: ${MY_LIFF_ID} 進行初始化...`;
+      
+      try {
+        // 執行初始化
+        await liff.init({ liffId: MY_LIFF_ID });
+        
+        // 如果成功，顯示綠色成功訊息
+        statusElement.textContent = '✅ LIFF 初始化成功！';
+        statusElement.style.color = 'green';
+        
+        // 顯示一些有用的資訊
+        errorElement.innerHTML = `
+          登入狀態: ${liff.isLoggedIn()} <br>
+          作業系統: ${liff.getOS()} <br>
+          語言: ${liff.getLanguage()} <br>
+          LINE 版本: ${liff.getLineVersion()}
+        `;
+        
+      } catch (err) {
+        // 如果失敗，顯示紅色失敗訊息和詳細錯誤
+        statusElement.textContent = '❌ LIFF 初始化失敗！';
+        statusElement.style.color = 'red';
+        errorElement.textContent = JSON.stringify(err, null, 2); // 格式化 JSON 輸出
+        console.error(err); // 在 console 也印出錯誤物件
+      }
+    }
+
+    // 執行主函式
+    main();
+  </script>
+</body>
+</html>
