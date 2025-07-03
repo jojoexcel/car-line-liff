@@ -1,6 +1,6 @@
 // ==================【請修改這裡的設定】==================
 const LIFF_ID = 'YOUR_LIFF_ID'; // 等下步驟三會取得
-const GAS_API_URL = 'YOUR_GAS_WEB_APP_URL'; // 貼上你在步驟一取得的網址
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxnTa13Y2fOUXVlslYU8BQD-lfkW6XJ9WqsjDO5AhKM7leXVRrpvRXk90v5yAKrSmS4/exec'; // 貼上你在步驟一取得的網址
 // =======================================================
 
 async function main() {
