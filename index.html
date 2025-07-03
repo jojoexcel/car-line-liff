@@ -6,23 +6,31 @@
     <title>公務車系統 - 連線測試</title>
     <style>
         body { font-family: sans-serif; padding: 1em; }
-        #status-message { font-weight: bold; }
-        #user-data { background-color: #f0f0f0; padding: 10px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; }
+        #status-message { font-weight: bold; color: blue; }
+        #user-data { 
+            background-color: #f0f0f0; 
+            padding: 10px; 
+            border-radius: 5px; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            font-family: monospace;
+            font-size: 12px;
+        }
+        /* 讓除錯訊息更清楚 */
+        #user-data p { margin: 2px 0; border-bottom: 1px dotted #ccc;}
     </style>
 </head>
 <body>
-    <h1>連線測試頁面</h1>
+    <h1>連線測試頁面 (除錯模式)</h1>
     <p id="status-message">正在初始化...</p>
     <hr>
     <h2>你的 LINE User ID:</h2>
     <p id="user-id">尚未取得</p>
     
-    <h2>從 Google Sheet 取得的資料:</h2>
-    <pre id="user-data">正在呼叫 API...</pre>
+    <h2>執行日誌:</h2>
+    <div id="user-data"></div> <!-- 改成 div 方便插入 p 標籤 -->
 
-    <!-- LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <!-- Our Main Logic -->
     <script src="./js/main.js"></script>
 </body>
 </html>
