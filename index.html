@@ -1,17 +1,28 @@
 <!DOCTYPE html>
-<html>
-<head><title>LIFF App</title></head>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公務車系統 - 連線測試</title>
+    <style>
+        body { font-family: sans-serif; padding: 1em; }
+        #status-message { font-weight: bold; }
+        #user-data { background-color: #f0f0f0; padding: 10px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
 <body>
-  <p>正在載入頁面...</p>
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const targetPage = params.get('target');
-    const validPages = ['LiffScanner', 'ProfileEditor'];
-    if (targetPage && validPages.includes(targetPage)) {
-      window.location.replace(targetPage + '.html' + window.location.search);
-    } else {
-      window.location.replace('LiffScanner.html' + window.location.search);
-    }
-  </script>
+    <h1>連線測試頁面</h1>
+    <p id="status-message">正在初始化...</p>
+    <hr>
+    <h2>你的 LINE User ID:</h2>
+    <p id="user-id">尚未取得</p>
+    
+    <h2>從 Google Sheet 取得的資料:</h2>
+    <pre id="user-data">正在呼叫 API...</pre>
+
+    <!-- LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <!-- Our Main Logic -->
+    <script src="./main.js"></script>
 </body>
 </html>
