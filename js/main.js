@@ -3,6 +3,7 @@ const LIFF_ID = '2007626718-yQALkZm8'; // 您的 LIFF ID
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxnTa13Y2fOUXVlslYU8BQD-lfkW6XJ9WqsjDO5AhKM7leXVRrpvRXk90v5yAKrSmS4/exec'; // 您的 GAS 網址
 // =======================================================
 
+
 /**
  * 將日誌訊息顯示在畫面上，方便在手機上除錯。
  * @param {string} message - 要顯示的訊息。
