@@ -19,32 +19,31 @@ async function main() {
         statusMsg.textContent = '1. 正在初始化 LIFF...';
         logToScreen('Initializing LIFF...');
         await liff.init({ liffId: LIFF_ID });
-
-        // 【關鍵修正】處理外部瀏覽器登入後的重新導向
-        // 這會移除 URL 中多餘的 liff.state 參數，防止無限迴圈
-        if (liff.getOS() !== 'web' && liff.isInClient()) {
-           logToScreen('Running inside LINE client.');
-        } else {
-           logToScreen('Running in external browser.');
-           const dest = `${location.origin}${location.pathname}`;
-           if (location.href !== dest) {
-               history.replaceState({}, '', dest);
-               logToScreen(`URL cleaned. Reloading page...`);
-               // 有時需要重新載入來讓 LIFF SDK 重新識別狀態
-               // window.location.reload(); 
-               // 暫時先不自動重載，看是否能直接運作
-           }
-        }
+        
+        // 判斷是否在 LINE App 外部
+        const isExternalBrowser = (liff.getOS() !== 'web' && !liff.isInClient());
 
         if (!liff.isLoggedIn()) {
             statusMsg.textContent = '您尚未登入，將為您導向登入頁面...';
             logToScreen('User not logged in. Redirecting to login...');
+            // 在外部瀏覽器登入時，指定跳轉回來的 URI
             liff.login({ redirectUri: window.location.href });
-            return;
+            return; // liff.login() 會跳轉頁面，後續程式碼不執行
         }
         
         statusMsg.textContent = '2. 正在取得使用者 Profile...';
-        logToScreen('Getting LINE profile...');
+        logToScreen('Getting user profile...');
+
+        // 【關鍵修正】加上一個小小的延遲，給 SDK 反應時間
+        // await new Promise(resolve => setTimeout(resolve, 50)); 
+        // 經過測試，更穩健的方法是直接獲取 Access Token，這會強制 SDK 完成驗證流程
+        
+        const accessToken = liff.getAccessToken();
+        if (!accessToken) {
+            throw new Error('無法獲取 Access Token，請嘗試重新登入。');
+        }
+        logToScreen('Access Token acquired.');
+
         const profile = await liff.getProfile();
         
         if (!profile || !profile.userId) {
