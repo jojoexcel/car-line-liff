@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>預約借車</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        .step { display: none; }
+        .step.active { display: block; }
+        .car-list-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .car-list-item input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">載入中...</div>
+    <div class="container">
+        <h1>預約借車</h1>
+
+        <!-- 步驟一：選擇時間 -->
+        <div id="step1" class="step active">
+            <h2>步驟 1: 選擇借用時間</h2>
+            <form id="time-form">
+                <div class="form-group">
+                    <label for="start-time">開始時間</label>
+                    <input type="datetime-local" id="start-time" required>
+                </div>
+                <div class="form-group">
+                    <label for="end-time">結束時間</label>
+                    <input type="datetime-local" id="end-time" required>
+                </div>
+                <button type="submit">查詢可用車輛</button>
+            </form>
+        </div>
+
+        <!-- 步驟二：選擇車輛與填寫資料 -->
+        <div id="step2" class="step">
+            <h2>步驟 2: 選擇車輛並填寫資訊</h2>
+            <form id="details-form">
+                <div class="form-group">
+                    <label>可用車輛</label>
+                    <div id="car-list"></div>
+                </div>
+                <div class="form-group">
+                    <label for="reason">申請事由</label>
+                    <input type="text" id="reason" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">起訖地點</label>
+                    <input type="text" id="location" placeholder="例如: 台北-台中" required>
+                </div>
+                <button type="submit">確認預約</button>
+            </form>
+        </div>
+
+        <div id="message-box" class="message" style="display: none;"></div>
+    </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/booking.js"></script>
+</body>
+</html>
