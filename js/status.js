@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const infoPanel = document.getElementById('info-panel');
     const infoText = document.getElementById('info-text');
 
-    /**
-     * 渲染預約列表
+     /**
+     * 渲染預約列表 (狀態增強版)
      * @param {Array<object>} reservations 
      */
     function renderReservations(reservations) {
@@ -21,13 +21,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         reservations.forEach(res => {
             const card = document.createElement('div');
             card.className = 'reservation-card';
-            card.id = `reservation-${res.rowNum}`; // 給卡片一個 ID
+            card.id = `reservation-${res.rowNum}`;
+
+            // 【關鍵修改】根據狀態決定是否要產生取消按鈕
+            let cancelButtonHtml = '';
+            if (res.status === '預約成功') {
+                cancelButtonHtml = `<button class="cancel-btn" data-row-num="${res.rowNum}">取消此預約</button>`;
+            }
+
             card.innerHTML = `
-                <h3>${res.carPlate}</h3>
+                <h3>${res.carPlate} <span class="status-badge">${res.status}</span></h3>
                 <p><strong>時間：</strong>${res.startTime} - ${res.endTime}</p>
                 <p><strong>事由：</strong>${res.reason}</p>
                 <p><strong>地點：</strong>${res.location}</p>
-                <button class="cancel-btn" data-row-num="${res.rowNum}">取消此預約</button>
+                ${cancelButtonHtml} 
             `;
             reservationListElem.appendChild(card);
         });
