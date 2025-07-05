@@ -99,44 +99,61 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
     
-    function apiProcessCarAction(params) {
-    try {
-        // 【關鍵修正】接收的參數從 'action' 改為 'actionType'
-        const { userId, actionType, reservationId, carPlate, mileage, notes, gasFee } = params;
-        if (!userId || !actionType || !reservationId || !carPlate || !mileage) {
-            return { status: 'error', message: '缺少必要參數' };
-        }
-
-        let actionKeyword;
-        if (actionType === '領車') { // <-- 用 actionType 來判斷
-            actionKeyword = 'PICKUP';
-        } else if (actionType === '還車') {
-            actionKeyword = 'RETURN';
-        } else {
-            throw new Error(`未知的操作類型: ${actionType}`);
-        }
-
-        const sheet = getSheet('車子領取記錄');
-        const newRowData = [
-            new Date(),
-            userId,
-            carPlate,
-            actionKeyword,
-            parseInt(mileage),
-            reservationId,
-            actionKeyword === 'RETURN' ? parseInt(gasFee || 0) : '',
-            notes || ''
-        ];
-
-        sheet.appendRow(newRowData);
-
-        return { status: 'success', message: `${actionType} 記錄已成功儲存！` }; // 回傳的訊息也用 actionType
-
-    } catch (e) {
-        Logger.log('apiProcessCarAction Error: ' + e);
-        return { status: 'error', message: '寫入記錄時發生錯誤: ' + e.toString() };
+    async function handleFormSubmit(e, formType) {
+    e.preventDefault();
+    
+    if (!currentAction) {
+        showMessage('發生錯誤：未選擇任何操作，請刷新頁面。', 'error');
+        return;
     }
-}
+
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.textContent = '處理中...';
+
+    try {
+        const mileage = document.getElementById(`${formType}-mileage`).value;
+        if (!mileage) {
+            alert('請務必輸入公里數！');
+            submitButton.disabled = false;
+            submitButton.textContent = formType === 'pickup' ? '確認領車' : '確認還車';
+            return;
+        }
+
+        // 【關鍵修正】將參數的鍵名 'action' 改為 'actionType'，避免與 API 路由的 'action' 衝突
+        const params = {
+            userId: liffProfile.userId,
+            actionType: formType === 'pickup' ? '領車' : '還車', // <-- 改成 actionType
+            reservationId: currentAction.reservation.recordId,
+            carPlate: currentAction.reservation.carPlate,
+            mileage: mileage,
+            notes: document.getElementById(`${formType}-notes`).value,
+            gasFee: formType === 'return' ? (document.getElementById('return-gas-fee').value || '0') : ''
+        };
+
+        // 呼叫後端 API，第一個參數是路由 action，第二個是資料 params
+        const result = await callGasApi('processCarAction', params);
+
+            if (result.status === 'success') {
+                showMessage(result.message, 'success');
+                e.target.style.display = 'none';
+                infoPanel.style.display = 'block';
+                infoText.textContent = '操作完成！您可以關閉此頁面。';
+                setTimeout(() => {
+                    if (liff.isInClient()) {
+                        liff.closeWindow();
+                    }
+                }, 3000);
+            } else {
+                throw new Error(result.message || '儲存失敗，未提供原因。');
+            }
+        } catch (error) {
+            console.error('Error in handleFormSubmit:', error);
+            showMessage(`前端錯誤: ${error.message}`, 'error');
+            submitButton.disabled = false;
+            submitButton.textContent = formType === 'pickup' ? '確認領車' : '確認還車';
+        }
+    }
     
     pickupForm.addEventListener('submit', (e) => handleFormSubmit(e, 'pickup'));
     returnForm.addEventListener('submit', (e) => handleFormSubmit(e, 'return'));
