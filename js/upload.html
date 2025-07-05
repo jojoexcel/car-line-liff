@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拍照上傳</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        .record-select { width: 100%; padding: 10px; font-size: 1em; }
+        #preview-area { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .preview-img { width: 100px; height: 100px; object-fit: cover; border: 1px solid #ddd; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">載入中...</div>
+    <div class="container">
+        <h1>拍照上傳</h1>
+
+        <!-- 步驟一：選擇記錄 -->
+        <div id="step1" class="form-group">
+            <label for="record-select">選擇要上傳照片的記錄</label>
+            <select id="record-select" class="record-select">
+                <option value="">請選擇...</option>
+            </select>
+        </div>
+
+        <!-- 步驟二：上傳照片 (預設隱藏) -->
+        <div id="step2" style="display: none;">
+            <div class="form-group">
+                <label for="file-input">選擇照片 (最多5張)</label>
+                <input type="file" id="file-input" accept="image/*" multiple>
+            </div>
+            <div id="preview-area"></div>
+            <button id="submit-btn" disabled>上傳照片</button>
+        </div>
+        
+        <div id="message-box" class="message" style="display: none;"></div>
+    </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/upload.js"></script>
+</body>
+</html>
