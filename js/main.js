@@ -1,7 +1,7 @@
 // js/main.js
 
 // --- 全域設定 ---
-const LIFF_ID = '2007626718-yQALkZm8'; // 您的 LIFF ID
+const LIFF_ID = '2007626718-yQALkZm8'; // 您的 LIFF ID 2007626718-yQALkZm8
 // const LIFF_ID = '2007626718-DBoB9k43';
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxnTa13Y2fOUXVlslYU8BQD-lfkW6XJ9WqsjDO5AhKM7leXVRrpvRXk90v5yAKrSmS4/exec'; // 您的 GAS 網址
 
