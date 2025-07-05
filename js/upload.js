@@ -37,13 +37,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         liffProfile = await initializeLiff();
         if (!liffProfile) return;
 
-        const result = await callGasApi('getLastActionRecord', { userId: liffProfile.userId });
+         // 【關鍵修改 - 步驟 2】呼叫後端，獲取我們系統內的用戶資料
+        try {
+            const profileResult = await callGasApi('getUserProfile', { userId: liffProfile.userId });
+            if (profileResult.status === 'found') {
+                userSystemProfile = profileResult.data; // 將用戶資料存到全域變數
+            } else {
+                // 如果在我們系統裡找不到這個使用者，就用 LINE 名稱當作備用
+                userSystemProfile = { name: liffProfile.displayName };
+                showMessage('警告：在系統中找不到您的用戶資料，將使用 LINE 名稱。', 'error');
+            }
+        } catch (e) {
+            userSystemProfile = { name: liffProfile.displayName };
+            showMessage(`獲取用戶資料失敗: ${e.message}`, 'error');
+        }
 
-        if (result.status === 'success' && result.data) {
-            const record = result.data;
+        // 步驟 3: 獲取最後一筆領還車記錄
+        const recordResult = await callGasApi('getLastActionRecord', { userId: liffProfile.userId });
+        if (recordResult.status === 'success' && recordResult.data) {
+            const record = recordResult.data;
             targetRecordId = record.recordId;
 
-            // 更新 UI，顯示記錄資訊並顯示上傳區塊
             const actionText = record.action === 'PICKUP' ? '領車' : '還車';
             if (recordDetails) {
                 recordDetails.textContent = `[${actionText}] ${record.carPlate} - ${record.timestamp}`;
@@ -51,9 +65,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (recordInfo) recordInfo.style.display = 'block';
             if (uploadPanel) uploadPanel.style.display = 'block';
             if (infoPanel) infoPanel.style.display = 'none';
-
         } else {
-            if (infoText) infoText.textContent = result.message || '您沒有可上傳照片的記錄。';
+            if (infoText) infoText.textContent = recordResult.message || '您沒有可上傳照片的記錄。';
         }
     }
 
@@ -97,7 +110,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('請先選擇照片！');
             return;
         }
-        
+          // 【關鍵修改】再次確認 userSystemProfile 是否存在
+        if (!userSystemProfile || !userSystemProfile.name) {
+            showMessage('無法獲取您的用戶名稱，無法上傳。請確認您的個人資料是否已建立。', 'error');
+            return;
+        }
         showLoading();
         if (submitBtn) {
             submitBtn.disabled = true;
@@ -116,15 +133,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }))
             );
 
-            // 使用 POST 請求發送大數據到後端
+            // 使用 POST 請求發送大數據
             const response = await fetch(GAS_API_URL, {
                 method: 'POST',
-                mode: 'cors', // 明確指定 cors 模式
+                mode: 'cors',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
                     action: 'uploadImages',
                     recordId: targetRecordId,
-                    images: base64Images
+                    images: base64Images,
+                    // 【關鍵修改】使用從我們自己資料庫拿到的 userSystemProfile.name
+                    userName: userSystemProfile.name 
                 })
             });
 
