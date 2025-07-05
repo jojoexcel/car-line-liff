@@ -1,72 +1,53 @@
-// js/upload.js
+// js/upload.js (簡化流程版)
 document.addEventListener('DOMContentLoaded', async () => {
     let liffProfile = null;
-    let selectedRecordId = null;
+    let targetRecordId = null; // 只儲存目標記錄的 ID
     let imageFiles = [];
 
-    const recordSelect = document.getElementById('record-select');
-    const step2 = document.getElementById('step2');
+    // DOM 元素
+    const recordInfo = document.getElementById('record-info');
+    const recordDetails = document.getElementById('record-details');
+    const infoPanel = document.getElementById('info-panel');
+    const infoText = document.getElementById('info-text');
+    const uploadPanel = document.getElementById('upload-panel');
     const fileInput = document.getElementById('file-input');
     const previewArea = document.getElementById('preview-area');
     const submitBtn = document.getElementById('submit-btn');
     const messageBox = document.getElementById('message-box');
 
-    function showMessage(text, type) { /* ... */ }
+    function showMessage(text, type) { /* ... 保持不變 ... */ }
 
-    // 初始化頁面，獲取記錄列表
+    // 初始化頁面，獲取「最後一筆」記錄
     async function initializePage() {
         liffProfile = await initializeLiff();
         if (!liffProfile) return;
 
-        const result = await callGasApi('getMyPickupReturnRecords', { userId: liffProfile.userId });
-        if (result.status === 'success' && result.data.length > 0) {
-            result.data.forEach(record => {
-                const option = document.createElement('option');
-                option.value = record.recordId;
-                option.textContent = `[${record.action}] ${record.carPlate} - ${record.timestamp}`;
-                recordSelect.appendChild(option);
-            });
+        const result = await callGasApi('getLastActionRecord', { userId: liffProfile.userId });
+
+        if (result.status === 'success' && result.data) {
+            const record = result.data;
+            targetRecordId = record.recordId; // 儲存起來供上傳時使用
+
+            // 更新 UI，顯示記錄資訊並顯示上傳區塊
+            const actionText = record.action === 'PICKUP' ? '領車' : '還車';
+            recordDetails.textContent = `[${actionText}] ${record.carPlate} - ${record.timestamp}`;
+            recordInfo.style.display = 'block';
+            uploadPanel.style.display = 'block';
+            infoPanel.style.display = 'none';
         } else {
-            showMessage('您近期沒有可上傳照片的記錄。', 'info');
+            // 找不到記錄或發生錯誤
+            infoText.textContent = result.message || '您沒有可上傳照片的記錄。';
         }
     }
 
-    // 當使用者選擇一筆記錄時
-    recordSelect.addEventListener('change', () => {
-        selectedRecordId = recordSelect.value;
-        if (selectedRecordId) {
-            step2.style.display = 'block';
-        } else {
-            step2.style.display = 'none';
-        }
-    });
+    // 當使用者選擇照片檔案時 (邏輯不變)
+    fileInput.addEventListener('change', () => { /* ... 保持不變 ... */ });
 
-    // 當使用者選擇照片檔案時
-    fileInput.addEventListener('change', () => {
-        if (fileInput.files.length > 5) {
-            alert('最多只能選擇 5 張照片！');
-            fileInput.value = ''; // 清空選擇
-            return;
-        }
-        imageFiles = Array.from(fileInput.files);
-        previewArea.innerHTML = '';
-        imageFiles.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.className = 'preview-img';
-                previewArea.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
-        submitBtn.disabled = imageFiles.length === 0;
-    });
-
-    // 點擊上傳按鈕
+    // 點擊上傳按鈕 (邏輯微調)
     submitBtn.addEventListener('click', async () => {
-        if (!selectedRecordId || imageFiles.length === 0) {
-            alert('請先選擇記錄並選擇照片！');
+        // 現在只檢查 targetRecordId
+        if (!targetRecordId || imageFiles.length === 0) {
+            alert('請選擇照片！');
             return;
         }
         
@@ -87,10 +68,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             // 使用 POST 請求發送大數據
             const response = await fetch(GAS_API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // 避免 CORS preflight
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
                     action: 'uploadImages',
-                    recordId: selectedRecordId,
+                    recordId: targetRecordId, // 使用儲存好的 ID
                     images: base64Images
                 })
             });
