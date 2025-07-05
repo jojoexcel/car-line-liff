@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改歷史記錄</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        .record-list-item {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .record-list-item:hover {
+            background-color: #f8f9fa;
+        }
+        .record-list-item.selected {
+            background-color: #e0f2f1;
+            border-color: var(--primary-color);
+        }
+        #edit-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">載入中...</div>
+    <div class="container">
+        <h1>修改歷史記錄</h1>
+        <p>請選擇一筆過去 7 天內的記錄進行修改。</p>
+        
+        <div id="record-list">
+            <!-- JS 會在這裡動態產生記錄列表 -->
+        </div>
+
+        <div id="info-panel" style="display: none;">
+            <p id="info-text"></p>
+        </div>
+
+        <!-- 修改表單 (預設隱藏) -->
+        <form id="edit-form" style="display: none;">
+            <h3>修改資料</h3>
+            <div class="form-group">
+                <label for="edit-mileage">公里數</label>
+                <input type="number" id="edit-mileage" inputmode="numeric">
+            </div>
+            <div class="form-group">
+                <label for="edit-gas">加油金額</label>
+                <input type="number" id="edit-gas" inputmode="numeric">
+            </div>
+            <div class="form-group">
+                <label for="edit-notes">備註</label>
+                <input type="text" id="edit-notes">
+            </div>
+            <button type="submit">儲存修改</button>
+        </form>
+
+        <div id="message-box" class="message" style="display: none;"></div>
+    </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/history.js"></script>
+</body>
+</html>
