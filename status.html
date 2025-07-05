@@ -46,7 +46,17 @@
 
         <div id="message-box" class="message" style="display: none;"></div>
     </div>
-
+ <!-- 【新增】自訂取消原因輸入框 (模態視窗) -->
+    <div id="cancel-modal-overlay" style="display: none;">
+        <div id="cancel-modal-content">
+            <h4>請輸入取消原因</h4>
+            <textarea id="cancel-reason-input" placeholder="可留空"></textarea>
+            <div class="modal-buttons">
+                <button id="modal-confirm-btn">確認取消</button>
+                <button id="modal-cancel-btn">暫不取消</button>
+            </div>
+        </div>
+    </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="./js/main.js"></script>
     <script src="./js/status.js"></script>
