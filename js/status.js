@@ -4,7 +4,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const reservationListElem = document.getElementById('reservation-list');
     const infoPanel = document.getElementById('info-panel');
     const infoText = document.getElementById('info-text');
-
+  // 【新增】獲取模態視窗的元素
+    const cancelModalOverlay = document.getElementById('cancel-modal-overlay');
+    const cancelReasonInput = document.getElementById('cancel-reason-input');
+    const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+     // 用一個變數來儲存當前要取消的預約資訊
+    let reservationToCancel = {
+        rowNum: null,
+        buttonElement: null
+    };
      /**
      * 渲染預約列表 (狀態增強版)
      * @param {Array<object>} reservations 
@@ -40,28 +49,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    /**
-     * 處理取消按鈕的點擊事件
-     * @param {Event} e 
+      /**
+     * 【重寫】處理取消按鈕的點擊事件，改為打開模態視窗
      */
-    async function handleCancelClick(e) {
-        // 事件委派：檢查點擊的是否是取消按鈕
+    function handleCancelClick(e) {
         if (!e.target.classList.contains('cancel-btn')) {
             return;
         }
+        
+        // 儲存當前要操作的按鈕和行號
+        reservationToCancel.buttonElement = e.target;
+        reservationToCancel.rowNum = e.target.dataset.rowNum;
 
-        const button = e.target;
-        const rowNum = button.dataset.rowNum;
+        // 清空輸入框並顯示模態視窗
+        cancelReasonInput.value = '';
+        cancelModalOverlay.style.display = 'flex';
+    }
 
-        // 彈出輸入框，讓使用者填寫取消原因
-        const cancelReason = prompt("請輸入取消原因（可留空）：", "");
-        // 如果使用者點擊了 prompt 的「取消」按鈕，則 reason 為 null，中止操作
-        if (cancelReason === null) {
-            return; 
-        }
+    /**
+     * 【新增】處理模態視窗中的「確認取消」按鈕點擊
+     */
+    async function confirmCancellation() {
+        const { rowNum, buttonElement } = reservationToCancel;
+        if (!rowNum || !buttonElement) return;
 
-        button.disabled = true;
-        button.textContent = '取消中...';
+        const cancelReason = cancelReasonInput.value;
+
+        // 關閉模態視窗
+        cancelModalOverlay.style.display = 'none';
+
+        buttonElement.disabled = true;
+        buttonElement.textContent = '取消中...';
 
         const params = {
             rowNum: rowNum,
@@ -72,7 +90,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const result = await callGasApi('cancelReservation', params);
         
         if (result.status === 'success') {
-            // 取消成功後，直接從畫面上移除這張卡片
             const cardToRemove = document.getElementById(`reservation-${rowNum}`);
             if (cardToRemove) {
                 cardToRemove.style.transition = 'opacity 0.5s';
@@ -82,9 +99,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('預約已成功取消！');
         } else {
             alert(`取消失敗: ${result.message}`);
-            button.disabled = false;
-            button.textContent = '取消此預約';
+            buttonElement.disabled = false;
+            buttonElement.textContent = '取消此預約';
         }
+    }
+    
+    /**
+     * 【新增】處理模態視窗中的「暫不取消」按鈕點擊
+     */
+    function closeCancelModal() {
+        cancelModalOverlay.style.display = 'none';
     }
 
     /**
@@ -104,8 +128,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 使用事件委派來監聽所有取消按鈕的點擊
+  // === 事件綁定 ===
     reservationListElem.addEventListener('click', handleCancelClick);
+    modalConfirmBtn.addEventListener('click', confirmCancellation);
+    modalCancelBtn.addEventListener('click', closeCancelModal);
 
     // 執行初始化
     initializePage();
