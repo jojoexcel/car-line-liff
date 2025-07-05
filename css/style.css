@@ -30,7 +30,26 @@ h1, h2 {
     border-bottom: 2px solid var(--secondary-color);
     padding-bottom: 10px;
 }
+.form-group.inline {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
 
+.form-group.inline label {
+    margin-bottom: 0;         /* 清除原本的 margin */
+    margin-right: 10px;
+    width: 120px;             /* 固定寬度，視情況可調整 */
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.form-group.inline input[type="text"],
+.form-group.inline input[type="tel"],
+.form-group.inline input[type="datetime-local"],
+.form-group.inline input[type="number"] {
+    flex: 1;
+}
 .form-group {
     margin-bottom: 15px;
 }
