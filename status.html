@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查詢我的預約</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        .reservation-card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-left: 5px solid var(--primary-color);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .reservation-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .reservation-card p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .cancel-btn {
+            background-color: var(--error-color);
+            margin-top: 10px;
+        }
+        .cancel-btn:hover {
+            background-color: #c9302c;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">載入中...</div>
+    <div class="container">
+        <h1>我的有效預約</h1>
+        
+        <div id="reservation-list">
+            <!-- JS 會在這裡動態產生預約卡片 -->
+        </div>
+
+        <div id="info-panel" style="display: none;">
+            <p id="info-text"></p>
+        </div>
+
+        <div id="message-box" class="message" style="display: none;"></div>
+    </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/status.js"></script>
+</body>
+</html>
