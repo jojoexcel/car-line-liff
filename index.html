@@ -3,51 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>公務車借用系統</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <title>公務車借用系統 - 主選單</title>
     <style>
+        /* --- 整體頁面樣式 --- */
+        :root {
+            --dark-bg: #1c1c1e;      /* 更深的背景，接近 iOS 深色模式 */
+            --primary-text: #ffffff;    /* 主要文字顏色 (白色) */
+            --secondary-text: #8e8e93;  /* 次要文字顏色 (灰色) */
+            --accent-color: #34c759;    /* 強調色 (iOS 綠色) */
+            --card-bg: #2c2c2e;       /* 卡片背景 */
+            --card-border: #3a3a3c;      /* 卡片邊框 */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 1.5em;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 3em); /* 滿版高度，減去 padding */
+        }
+
+        /* --- 頁首 --- */
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            color: var(--primary-text);
+        }
+        .header p {
+            margin: 8px 0 0;
+            font-size: 1.1em;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        /* --- 導航選單 --- */
+        .nav-menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 兩列網格佈局 */
+            gap: 15px; /* 按鈕間的間距 */
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
         .nav-menu a {
-            display: block;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px;
-            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card-bg);
+            color: var(--primary-text);
+            padding: 20px 10px;
             text-decoration: none;
             text-align: center;
-            border-radius: 5px;
-            font-size: 1.1em;
-            transition: transform 0.2s;
+            border-radius: 12px; /* 更圓潤的邊角 */
+            border: 1px solid var(--card-border);
+            font-size: 1em;
+            font-weight: 500;
+            transition: background-color 0.2s, transform 0.2s;
+            min-height: 70px; /* 按鈕最小高度 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        .nav-menu a:hover {
-            transform: scale(1.02);
+
+        .nav-menu a:active { /* 點擊時的效果 */
+            transform: scale(0.96);
+            background-color: #3a3a3c;
+        }
+
+        /* 【新增】尚未開放功能的樣式 */
+        .nav-menu a.disabled {
+            background-color: #1c1c1e;
+            color: var(--secondary-text);
+            cursor: not-allowed;
+            border-style: dashed;
+        }
+        .nav-menu a.disabled:active {
+            transform: none; /* 禁用點擊效果 */
+        }
+
+        /* --- 頁尾 --- */
+        .footer {
+            text-align: center;
+            margin-top: auto; /* 將頁尾推到最底部 */
+            padding-top: 30px;
+            font-size: 0.8em;
+            color: var(--secondary-text);
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 全域載入遮罩，雖然是黑色主題，但 JS 可能會用到 -->
+    <div id="loading-overlay"></div>
+
+    <header class="header">
         <h1>公務車借用系統</h1>
-        <p id="welcome-message">歡迎使用！</p>
-        <hr>
-        <div class="nav-menu">
-            <a href="profile.html">1. 個人資料管理</a>
-            <a href="booking.html">2. 預約借車</a>
-            <a href="action.html">3. 領車 / 還車</a>
-            <a href="status.html">4. 查詢我的預約</a>
-            <a href="stats.html">5. 個人借車統計</a>
-            <a href="admin.html">6. 管理員功能</a>
-        </div>
-    </div>
+        <p id="welcome-message">載入中...</p>
+    </header>
+
+    <main class="nav-menu">
+        <!-- 已完成的功能 -->
+        <a href="profile.html">📝 個人資料</a>
+        <a href="booking.html">📅 預約借車</a>
+        <a href="action.html">🔑 領車 / 還車</a>
+        <a href="status.html">🔍 查詢我的預約</a>
+        <a href="history.html">✍️ 修改歷史記錄</a>
+        <a href="upload.html">📷 拍照上傳</a>
+
+        <!-- 尚未製作的功能，加上 'disabled' class -->
+        <a href="#" class="disabled" onclick="event.preventDefault(); alert('此功能即將推出！');">📊 個人統計</a>
+        <a href="#" class="disabled" onclick="event.preventDefault(); alert('此功能即將推出！');">⚙️ 管理員功能</a>
+    </main>
+    
+    <footer class="footer">
+        <p>© 2024 Your Company Name</p>
+    </footer>
+
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        // 簡單的歡迎訊息
-        async function welcome() {
-            await liff.init({ liffId: '2007626718-yQALkZm8' });
-            if (liff.isLoggedIn()) {
-                const profile = await liff.getProfile();
-                document.getElementById('welcome-message').textContent = `歡迎，${profile.displayName}！`;
+        // 這個頁面的 JS 邏輯很單純，直接寫在這裡即可
+        async function initializeIndexPage() {
+            try {
+                // 使用您唯一的 LIFF ID
+                await liff.init({ liffId: '2007626718-yQALkZm8' });
+                
+                if (liff.isLoggedIn()) {
+                    const profile = await liff.getProfile();
+                    const welcomeEl = document.getElementById('welcome-message');
+                    if (welcomeEl) {
+                        welcomeEl.textContent = `歡迎，${profile.displayName}`;
+                    }
+                } else {
+                    // 如果沒登入，就導向登入頁，讓使用者完成登入後再回來
+                    liff.login();
+                }
+            } catch (error) {
+                console.error('LIFF initialization failed', error);
+                const welcomeEl = document.getElementById('welcome-message');
+                if (welcomeEl) {
+                    welcomeEl.textContent = '載入失敗，請重試';
+                }
             }
         }
-        welcome();
+        
+        // 執行初始化
+        initializeIndexPage();
     </script>
 </body>
 </html>
