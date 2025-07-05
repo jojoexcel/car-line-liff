@@ -1,10 +1,7 @@
-// js/action.js (終極除錯版)
 document.addEventListener('DOMContentLoaded', async () => {
-    // 全域變數
     let liffProfile = null;
     let currentReservation = null;
 
-    // 取得 HTML 元素
     const infoPanel = document.getElementById('info-panel');
     const infoText = document.getElementById('info-text');
     const pickupForm = document.getElementById('pickup-form');
@@ -18,14 +15,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function updateUI(status, reservation) {
-        // ... (這部分保持不變)
         pickupForm.style.display = 'none';
         returnForm.style.display = 'none';
         infoPanel.style.display = 'block';
-        
-        // 【關鍵】在這裡賦值
-        currentReservation = reservation; 
-        console.log('UI Updated. currentReservation is now:', currentReservation);
+        currentReservation = reservation;
 
         switch (status) {
             case 'ready_for_pickup':
@@ -47,14 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function initializePage() {
-        // ... (這部分保持不變)
         liffProfile = await initializeLiff();
         if (!liffProfile) return;
-        console.log('LIFF Profile initialized:', liffProfile);
-
         const result = await callGasApi('getPickupReturnStatus', { userId: liffProfile.userId });
-        console.log('getPickupReturnStatus result:', result);
-        
         if (result.status && result.status !== 'error') {
             updateUI(result.status, result.reservation);
         } else {
@@ -62,78 +50,56 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 【關鍵修改】處理表單提交的函式
+    // 【關鍵修正】actionType 統一使用英文 'pickup' 或 'return'
     async function handleFormSubmit(e, actionType) {
         e.preventDefault();
-        console.log(`--- handleFormSubmit started for action: ${actionType} ---`);
-
+        
         try {
-            // **步驟 1: 檢查核心變數**
-            if (!liffProfile || !liffProfile.userId) {
-                throw new Error('liffProfile or userId is missing!');
+            if (!liffProfile || !currentReservation) {
+                throw new Error('核心資料遺失，無法提交。');
             }
-            console.log('Check 1: liffProfile is OK.');
 
-            if (!currentReservation || !currentReservation.recordId) {
-                throw new Error('currentReservation or recordId is missing!');
+            // 使用英文關鍵字來尋找元素
+            const mileageElem = document.getElementById(`${actionType}-mileage`);
+            const notesElem = document.getElementById(`${actionType}-notes`);
+            
+            if (!mileageElem) {
+                throw new Error(`找不到 ID 為 ${actionType}-mileage 的元素。`);
             }
-            console.log('Check 2: currentReservation is OK.');
-
-            // **步驟 2: 取得表單數值**
-            const mileageElem = document.getElementById(`${actionType.toLowerCase()}-mileage`);
-            const notesElem = document.getElementById(`${actionType.toLowerCase()}-notes`);
-            if (!mileageElem || !notesElem) {
-                throw new Error('Could not find form elements (mileage or notes).');
-            }
-            console.log('Check 3: Form elements found.');
 
             const mileage = mileageElem.value;
-            const notes = notesElem.value;
+            const notes = notesElem ? notesElem.value : '';
             
-            // 檢查必填欄位
             if (!mileage) {
                 alert('請務必輸入公里數！');
                 return;
             }
-            console.log(`Mileage: ${mileage}, Notes: ${notes}`);
 
-            // **步驟 3: 組合參數**
             const params = {
                 userId: liffProfile.userId,
-                action: actionType,
+                // 後端 API 接收的 action 依然是中文，因為後端邏輯是用中文寫的
+                action: actionType === 'pickup' ? '領車' : '還車', 
                 reservationId: currentReservation.recordId,
                 carPlate: currentReservation.carPlate,
                 mileage: mileage,
                 notes: notes,
-                gasFee: '' // 預設為空
+                gasFee: ''
             };
 
-            if (actionType === '還車') {
+            if (actionType === 'return') {
                 const gasFeeElem = document.getElementById('return-gas-fee');
-                if (!gasFeeElem) throw new Error('Could not find gas fee element.');
-                params.gasFee = gasFeeElem.value || '0';
-                console.log(`Gas Fee: ${params.gasFee}`);
+                params.gasFee = gasFeeElem ? gasFeeElem.value || '0' : '0';
             }
             
-            console.log('Params to be sent:', params);
-
-            // **步驟 4: 呼叫 API**
             showMessage('正在儲存，請稍候...', 'info');
             const result = await callGasApi('processCarAction', params);
-            console.log('processCarAction result:', result);
 
-            // **步驟 5: 處理結果**
             if (result.status === 'success') {
                 showMessage(result.message, 'success');
-                pickupForm.style.display = 'none';
-                returnForm.style.display = 'none';
+                e.target.style.display = 'none'; // 隱藏當前提交的表單
                 infoPanel.style.display = 'block';
                 infoText.textContent = '操作完成！您可以關閉此頁面。';
-                setTimeout(() => {
-                    if (liff.isInClient()) {
-                        liff.closeWindow();
-                    }
-                }, 3000);
+                setTimeout(() => liff.isInClient() && liff.closeWindow(), 3000);
             } else {
                 throw new Error(result.message || '儲存失敗，未提供原因。');
             }
@@ -144,10 +110,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 綁定表單提交事件
-    pickupForm.addEventListener('submit', (e) => handleFormSubmit(e, '領車'));
-    returnForm.addEventListener('submit', (e) => handleFormSubmit(e, '還車'));
+    // 【關鍵修正】綁定事件時，傳入固定的英文關鍵字
+    pickupForm.addEventListener('submit', (e) => handleFormSubmit(e, 'pickup'));
+    returnForm.addEventListener('submit', (e) => handleFormSubmit(e, 'return'));
 
-    // 執行初始化
     initializePage();
 });
