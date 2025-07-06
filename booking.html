@@ -33,21 +33,17 @@
         <div id="step1" class="step active">
             <h2>步驟 1: 選擇借用時間</h2>
             <form id="time-form">
-                <!-- 【關鍵修改】開始時間 -->
                 <div class="form-group">
-                    <label for="start-date">開始時間</label>
-                    <div class="datetime-picker">
-                        <input type="date" id="start-date" required>
-                        <input type="time" id="start-time" step="1800" required> <!-- step="1800" 代表每30分鐘一個間隔 -->
-                    </div>
+                    <label for="start-time">開始時間</label>
+                    <input type="datetime-local" id="start-time" required>
+                    <!-- 【新增】用於顯示格式化時間的 span -->
+                    <div id="start-time-preview" class="datetime-preview"></div>
                 </div>
-                <!-- 【關鍵修改】結束時間 -->
                 <div class="form-group">
-                    <label for="end-date">結束時間</label>
-                    <div class="datetime-picker">
-                        <input type="date" id="end-date" required>
-                        <input type="time" id="end-time" step="1800" required>
-                    </div>
+                    <label for="end-time">結束時間</label>
+                    <input type="datetime-local" id="end-time" required>
+                    <!-- 【新增】用於顯示格式化時間的 span -->
+                    <div id="end-time-preview" class="datetime-preview"></div>
                 </div>
                 <button type="submit">查詢可用車輛</button>
             </form>
