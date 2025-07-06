@@ -43,18 +43,19 @@
             <form id="time-form">
                 <div class="form-group">
                     <label for="start-time">開始時間</label>
-                    <!-- 【修改】將 type 改為 "text"，並加上 readonly 防止手動輸入 -->
-                    <input type="text" id="start-time" placeholder="點擊選擇時間..." readonly="readonly" required>
+                    <input type="datetime-local" id="start-time" required>
+                    <!-- 【新增】用於顯示格式化時間的 span -->
+                    <div id="start-time-preview" class="datetime-preview"></div>
                 </div>
                 <div class="form-group">
                     <label for="end-time">結束時間</label>
-                    <!-- 【修改】將 type 改為 "text" -->
-                    <input type="text" id="end-time" placeholder="點擊選擇時間..." readonly="readonly" required>
+                    <input type="datetime-local" id="end-time" required>
+                    <!-- 【新增】用於顯示格式化時間的 span -->
+                    <div id="end-time-preview" class="datetime-preview"></div>
                 </div>
                 <button type="submit">查詢可用車輛</button>
             </form>
         </div>
-
         <!-- 步驟二：選擇車輛與填寫資料 -->
         <div id="step2" class="step">
             <h2>步驟 2: 選擇車輛並填寫資訊</h2>
