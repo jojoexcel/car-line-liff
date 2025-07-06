@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用指南</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        /* 針對指南頁面的額外樣式 */
+        .guide-section {
+            margin-bottom: 2em;
+        }
+        .guide-section h2 {
+            font-size: 1.5em;
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .guide-section h3 {
+            font-size: 1.2em;
+            color: #333;
+            margin-top: 1.5em;
+            margin-bottom: 10px;
+        }
+        .guide-section p, .guide-section li {
+            line-height: 1.8;
+            color: #555;
+        }
+        .guide-section ol {
+            padding-left: 20px;
+        }
+        .guide-section code {
+            background-color: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #d63384;
+        }
+        .screenshot-placeholder {
+            width: 100%;
+            height: 200px;
+            background-color: #f0f0f0;
+            border: 2px dashed #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+            font-weight: bold;
+            margin: 15px 0;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>公務車借用系統 - 使用指南</h1>
+        <p id="welcome-message">歡迎！以下是本系統的主要功能操作說明。</p>
+
+        <div class="guide-section">
+            <h2>1. 首次使用：建立個人資料</h2>
+            <ol>
+                <li>點擊主選單或圖文選單中的「📝 個人資料」。</li>
+                <li>系統會自動帶入您的 LINE 名稱。請填寫您的「用戶名稱」(例如您的真實姓名)、「電話」、「單位」及「職務」。</li>
+                <li>填寫完畢後，點擊「建立新資料」。</li>
+                <li>您的帳號狀態將變為「待審核」，請靜待管理員審核通過後，即可使用借車相關功能。</li>
+            </ol>
+            <div class="screenshot-placeholder">【個人資料填寫畫面截圖】</div>
+        </div>
+
+        <div class="guide-section">
+            <h2>2. 預約借車</h2>
+            <ol>
+                <li>點擊「📅 預約借車」。</li>
+                <li>在「開始時間」與「結束時間」欄位，點擊並選擇您要借用的日期與時間。</li>
+                <li>點擊「查詢可用車輛」。</li>
+                <li>系統會列出該時段所有可用的車輛。請點選您要預約的車輛。</li>
+                <li>填寫「申請事由」與「起訖地點」。</li>
+                <li>點擊「確認預約」，即完成預約程序。</li>
+            </ol>
+            <div class="screenshot-placeholder">【預約流程畫面截圖】</div>
+        </div>
+        
+        <div class="guide-section">
+            <h2>3. 領車 / 還車</h2>
+            <ol>
+                <li>在您預約的時間範圍內，點擊「🔑 領車 / 還車」。</li>
+                <li>系統會自動判斷您當前的狀態：
+                    <ul>
+                        <li>若您有多個可執行項目，會請您先選擇要操作的車輛。</li>
+                        <li>若您尚未領車，會顯示「領車作業」畫面。</li>
+                        <li>若您已領車，會顯示「還車作業」畫面。</li>
+                    </ul>
+                </li>
+                <li>請依照畫面提示，填寫「目前公里數」。還車時，請額外填寫「加油金額」。</li>
+                <li>點擊「確認領車」或「確認還車」完成操作。</li>
+            </ol>
+        </div>
+
+        <div class="guide-section">
+            <h2>4. 拍照上傳 (領/還車後)</h2>
+            <ol>
+                <li>完成領車或還車後，建議立即拍照存證。</li>
+                <li>點擊「📷 拍照上傳」。</li>
+                <li>頁面會自動鎖定您**最後一筆**領/還車記錄。</li>
+                <li>點擊「選擇照片」，您可以選擇相機直接拍照，或從相簿選擇照片 (最多5張)。</li>
+                <li>確認照片預覽無誤後，點擊「上傳照片」。</li>
+            </ol>
+            <div class="screenshot-placeholder">【拍照上傳畫面截圖】</div>
+        </div>
+        
+        <div class="guide-section">
+            <h2>5. 其他功能</h2>
+            <h3>查詢我的預約</h3>
+            <p>點擊「🔍 查詢我的預約」，可查看您所有尚未到期或尚未還車的預約。對於尚未領車的預約，您可以在此頁面進行取消。</p>
+            <h3>修改歷史記錄</h3>
+            <p>點擊「✍️ 修改歷史記錄」，可以修改過去一週內的領還車記錄，例如補填或修正公里數、加油金額、備註等。</p>
+        </div>
+
+        <div class="guide-section">
+            <h2>常見問題 (Q&A)</h2>
+            <h3>Q: 為什麼我無法預約借車？</h3>
+            <p>A: 請先至「個人資料」頁面確認您的帳號狀態是否為「通過」。若為「待審核」或「停權」，則無法使用借車功能。</p>
+            <h3>Q: 為什麼「領車/還車」頁面顯示我沒有可操作的項目？</h3>
+            <p>A: 請確認您當前的時間是否在預約的「可操作時間範圍」內。一般可於預約開始前 2 小時領車。若預約時間在早上 8 點前，則可於前一天下午 5 點後領車。</p>
+        </div>
+    </div>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        // 這個頁面只需要簡單的 LIFF 初始化來顯示歡迎訊息
+        async function initializeGuidePage() {
+            try {
+                await liff.init({ liffId: '2007626718-yQALkZm8' }); // 使用您唯一的 LIFF ID
+                if (liff.isLoggedIn()) {
+                    const profile = await liff.getProfile();
+                    const welcomeEl = document.getElementById('welcome-message');
+                    if (welcomeEl) {
+                        welcomeEl.textContent = `歡迎，${profile.displayName}！以下是本系統的操作說明。`;
+                    }
+                }
+            } catch (error) {
+                console.error('LIFF initialization failed', error);
+            }
+        }
+        initializeGuidePage();
+    </script>
+</body>
+</html>
