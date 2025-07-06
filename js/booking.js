@@ -6,16 +6,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     let selectedStartTime = null;
     let selectedEndTime = null;
 
-    // === DOM 元素快取 ===
+     // === DOM 元素快取 ===
     const step1 = document.getElementById('step1');
     const step2 = document.getElementById('step2');
     const timeForm = document.getElementById('time-form');
     const detailsForm = document.getElementById('details-form');
+    // 【修改】獲取新的 date 和 time 輸入框
+    const startDateElem = document.getElementById('start-date');
     const startTimeElem = document.getElementById('start-time');
+    const endDateElem = document.getElementById('end-date');
     const endTimeElem = document.getElementById('end-time');
     const carListElem = document.getElementById('car-list');
     const messageBox = document.getElementById('message-box');
-
     /**
      * 顯示訊息
      */
@@ -26,39 +28,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         messageBox.style.display = 'block';
     }
 
-    /**
-     * 【新增】設定預設的開始與結束時間
+/**
+     * 【新增】當日期選擇後，自動設定結束日期為同一天
      */
-    function setDefaultTimes() {
-        const now = new Date();
-        
-        // 1. 計算預設的開始時間 (下一個整點)
-        const defaultStart = new Date(now.getTime() + 60 * 60 * 1000); // 先加一小時
-        defaultStart.setMinutes(0); // 分鐘設為 00
-        defaultStart.setSeconds(0); // 秒數設為 00
-        defaultStart.setMilliseconds(0);
-
-        // 2. 計算預設的結束時間 (開始時間再加兩小時)
-        const defaultEnd = new Date(defaultStart.getTime() + 2 * 60 * 60 * 1000);
-
-        // 3. 將 Date 物件轉換成 datetime-local input 需要的格式 (YYYY-MM-DDTHH:mm)
-        // new Date().toISOString() 的格式是 '2024-07-27T06:30:00.000Z'
-        // 我們需要的是 '2024-07-27T14:30' (本地時間，且不要秒和毫秒)
-        // 這需要一個輔助函式來轉換
-        const toLocalISOString = (date) => {
-            const tzoffset = (new Date()).getTimezoneOffset() * 60000; // 獲取本地時區偏移
-            const localISOTime = (new Date(date - tzoffset)).toISOString().slice(0, 16);
-            return localISOTime;
-        };
-        
-        // 4. 設定到 input 的 value 中
-        if (startTimeElem) {
-            startTimeElem.value = toLocalISOString(defaultStart);
-        }
-        if (endTimeElem) {
-            endTimeElem.value = toLocalISOString(defaultEnd);
+    function syncDates() {
+        if (startDateElem.value && !endDateElem.value) {
+            endDateElem.value = startDateElem.value;
         }
     }
+    
+    /**
+     * 初始化頁面
+     */
+    async function initializePage() {
+        liffProfile = await initializeLiff();
+        if (!liffProfile) return;
+        
+        // 【新增】為開始日期輸入框綁定事件
+        if(startDateElem) {
+            startDateElem.addEventListener('change', syncDates);
+        }
+    }
+   
     
     /**
      * 初始化頁面
@@ -78,17 +69,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
         showMessage('', ''); 
         
-        selectedStartTime = startTimeElem.value;
-        selectedEndTime = endTimeElem.value;
+        // 【關鍵修改】從兩個輸入框讀取值，並組合成標準格式
+        const startDateValue = startDateElem.value;
+        const startTimeValue = startTimeElem.value;
+        const endDateValue = endDateElem.value;
+        const endTimeValue = endTimeElem.value;
 
-        if (new Date(selectedEndTime) <= new Date(selectedStartTime)) {
+        // 組合，例如 "2024-07-27" + "T" + "15:30" -> "2024-07-27T15:30"
+        combinedStartTime = `${startDateValue}T${startTimeValue}`;
+        combinedEndTime = `${endDateValue}T${endTimeValue}`;
+
+        if (new Date(combinedEndTime) <= new Date(combinedStartTime)) {
             showMessage('結束時間必須晚于開始時間', 'error');
             return;
         }
 
         const params = {
-            start: new Date(selectedStartTime).toISOString(),
-            end: new Date(selectedEndTime).toISOString(),
+            start: new Date(combinedStartTime).toISOString(),
+            end: new Date(combinedEndTime).toISOString(),
         };
 
         const result = await callGasApi('getAvailableCars', params);
@@ -130,8 +128,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const params = {
             userId: liffProfile.userId,
             carPlate: selectedCarPlate,
-            start: new Date(selectedStartTime).toISOString(),
-            end: new Date(selectedEndTime).toISOString(),
+            // start: new Date(selectedStartTime).toISOString(),
+            // end: new Date(selectedEndTime).toISOString(),
+                        start: new Date(combinedStartTime).toISOString(), // 使用組合後的時間
+            end: new Date(combinedEndTime).toISOString(),     // 使用組合後的時間
             reason: document.getElementById('reason').value,
             location: document.getElementById('location').value,
         };
