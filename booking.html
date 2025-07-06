@@ -27,24 +27,31 @@
 <body>
     <div id="loading-overlay">載入中...</div>
     <div class="container">
-        <h1>預約借車</h1>
+       <h1>預約借車</h1>
 
         <!-- 步驟一：選擇時間 -->
         <div id="step1" class="step active">
             <h2>步驟 1: 選擇借用時間</h2>
             <form id="time-form">
+                <!-- 【關鍵修改】開始時間 -->
                 <div class="form-group">
-                    <label for="start-time">開始時間</label>
-                    <input type="datetime-local" id="start-time" required>
+                    <label for="start-date">開始時間</label>
+                    <div class="datetime-picker">
+                        <input type="date" id="start-date" required>
+                        <input type="time" id="start-time" step="1800" required> <!-- step="1800" 代表每30分鐘一個間隔 -->
+                    </div>
                 </div>
+                <!-- 【關鍵修改】結束時間 -->
                 <div class="form-group">
-                    <label for="end-time">結束時間</label>
-                    <input type="datetime-local" id="end-time" required>
+                    <label for="end-date">結束時間</label>
+                    <div class="datetime-picker">
+                        <input type="date" id="end-date" required>
+                        <input type="time" id="end-time" step="1800" required>
+                    </div>
                 </div>
                 <button type="submit">查詢可用車輛</button>
             </form>
         </div>
-
         <!-- 步驟二：選擇車輛與填寫資料 -->
         <div id="step2" class="step">
             <h2>步驟 2: 選擇車輛並填寫資訊</h2>
