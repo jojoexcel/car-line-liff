@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const HH = String(dateObj.getHours()).padStart(2, '0');
             const mm = String(dateObj.getMinutes()).padStart(2, '0');
             
-            previewElement.textContent = `${yyyy}/${MM}/${dd} ${HH}:${mm}`;
+            previewElement.textContent = `24H ${yyyy}/${MM}/${dd} ${HH}:${mm}`;
         } catch (e) {
             previewElement.textContent = '無效的時間格式';
         }
