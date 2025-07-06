@@ -1,25 +1,33 @@
-// js/booking.js (預設時間優化版)
-
+/**
+ * 檔案說明：預約借車頁面 (booking.html) 的主要邏輯。
+ * 核心功能：
+ * 1. 讓使用者選擇起迄時間，並在下方即時顯示 24 小時制的格式化預覽。
+ * 2. 查詢可用車輛並讓使用者選擇。
+ * 3. 提交預約申請。
+ * 版本：2.0 (時間預覽版)
+ */
 document.addEventListener('DOMContentLoaded', async () => {
     // === 全域變數 ===
+    // 儲存從 LIFF SDK 獲取的使用者資訊
     let liffProfile = null;
+    // 儲存使用者選擇的標準時間字串，供步驟二提交時使用
     let selectedStartTime = null;
     let selectedEndTime = null;
 
-     // === DOM 元素快取 ===
+    // === DOM 元素快取 ===
     const step1 = document.getElementById('step1');
     const step2 = document.getElementById('step2');
     const timeForm = document.getElementById('time-form');
     const detailsForm = document.getElementById('details-form');
-    // 【修改】獲取新的 date 和 time 輸入框
-    const startDateElem = document.getElementById('start-date');
     const startTimeElem = document.getElementById('start-time');
-    const endDateElem = document.getElementById('end-date');
     const endTimeElem = document.getElementById('end-time');
+    const startTimePreview = document.getElementById('start-time-preview');
+    const endTimePreview = document.getElementById('end-time-preview');
     const carListElem = document.getElementById('car-list');
     const messageBox = document.getElementById('message-box');
+
     /**
-     * 顯示訊息
+     * 在頁面上方顯示成功或失敗的訊息。
      */
     function showMessage(text, type) {
         if (!messageBox) return;
@@ -27,39 +35,55 @@ document.addEventListener('DOMContentLoaded', async () => {
         messageBox.className = `message ${type}`;
         messageBox.style.display = 'block';
     }
-
-/**
-     * 【新增】當日期選擇後，自動設定結束日期為同一天
+    
+    /**
+     * 格式化並顯示時間的輔助函式。
+     * @param {string} isoDateTimeString - 從 input.value 讀取的值，例如 '2024-07-27T15:30'
+     * @param {HTMLElement} previewElement - 要更新內容的 div 元素
      */
-    function syncDates() {
-        if (startDateElem.value && !endDateElem.value) {
-            endDateElem.value = startDateElem.value;
+    function updatePreview(isoDateTimeString, previewElement) {
+        if (!previewElement) return;
+
+        if (!isoDateTimeString) {
+            previewElement.textContent = ''; // 如果沒有值，就清空預覽
+            return;
+        }
+        try {
+            const dateObj = new Date(isoDateTimeString);
+            // 檢查日期是否有效
+            if (isNaN(dateObj.getTime())) {
+                previewElement.textContent = '';
+                return;
+            }
+            // 手動組合 yyyy/MM/dd HH:mm (24小時制) 格式
+            const yyyy = dateObj.getFullYear();
+            const MM = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateObj.getDate()).padStart(2, '0');
+            const HH = String(dateObj.getHours()).padStart(2, '0');
+            const mm = String(dateObj.getMinutes()).padStart(2, '0');
+            
+            previewElement.textContent = `${yyyy}/${MM}/${dd} ${HH}:${mm}`;
+        } catch (e) {
+            previewElement.textContent = '無效的時間格式';
         }
     }
-    
+
     /**
      * 初始化頁面
      */
     async function initializePage() {
+        // 從 main.js 取得 LIFF Profile
         liffProfile = await initializeLiff();
         if (!liffProfile) return;
         
-        // 【新增】為開始日期輸入框綁定事件
-        if(startDateElem) {
-            startDateElem.addEventListener('change', syncDates);
+        // 為兩個時間輸入框綁定 'input' 事件監聽器
+        // 'input' 事件會在使用者每次修改值時觸發
+        if (startTimeElem) {
+            startTimeElem.addEventListener('input', () => updatePreview(startTimeElem.value, startTimePreview));
         }
-    }
-   
-    
-    /**
-     * 初始化頁面
-     */
-    async function initializePage() {
-        liffProfile = await initializeLiff();
-        if (!liffProfile) return;
-
-        // 【新增】在初始化時呼叫設定預設時間的函式
-        setDefaultTimes();
+        if (endTimeElem) {
+            endTimeElem.addEventListener('input', () => updatePreview(endTimeElem.value, endTimePreview));
+        }
     }
 
     /**
@@ -67,26 +91,19 @@ document.addEventListener('DOMContentLoaded', async () => {
      */
     timeForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        showMessage('', ''); 
+        showMessage('', ''); // 清空舊訊息
         
-        // 【關鍵修改】從兩個輸入框讀取值，並組合成標準格式
-        const startDateValue = startDateElem.value;
-        const startTimeValue = startTimeElem.value;
-        const endDateValue = endDateElem.value;
-        const endTimeValue = endTimeElem.value;
+        selectedStartTime = startTimeElem.value;
+        selectedEndTime = endTimeElem.value;
 
-        // 組合，例如 "2024-07-27" + "T" + "15:30" -> "2024-07-27T15:30"
-        combinedStartTime = `${startDateValue}T${startTimeValue}`;
-        combinedEndTime = `${endDateValue}T${endTimeValue}`;
-
-        if (new Date(combinedEndTime) <= new Date(combinedStartTime)) {
+        if (new Date(selectedEndTime) <= new Date(selectedStartTime)) {
             showMessage('結束時間必須晚于開始時間', 'error');
             return;
         }
 
         const params = {
-            start: new Date(combinedStartTime).toISOString(),
-            end: new Date(combinedEndTime).toISOString(),
+            start: new Date(selectedStartTime).toISOString(),
+            end: new Date(selectedEndTime).toISOString(),
         };
 
         const result = await callGasApi('getAvailableCars', params);
@@ -128,10 +145,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const params = {
             userId: liffProfile.userId,
             carPlate: selectedCarPlate,
-            // start: new Date(selectedStartTime).toISOString(),
-            // end: new Date(selectedEndTime).toISOString(),
-                        start: new Date(combinedStartTime).toISOString(), // 使用組合後的時間
-            end: new Date(combinedEndTime).toISOString(),     // 使用組合後的時間
+            start: new Date(selectedStartTime).toISOString(),
+            end: new Date(selectedEndTime).toISOString(),
             reason: document.getElementById('reason').value,
             location: document.getElementById('location').value,
         };
@@ -140,12 +155,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (result.status === 'success') {
             showMessage(result.message, 'success');
-            detailsForm.style.display = 'none';
+            detailsForm.style.display = 'none'; // 預約成功後隱藏表單
             setTimeout(() => {
                 if (liff.isInClient()) {
                     liff.closeWindow();
                 }
-            }, 3000);
+            }, 3000); // 3秒後自動關閉 LIFF 視窗
         } else {
             showMessage(result.message || '預約失敗', 'error');
         }
