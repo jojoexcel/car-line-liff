@@ -4,10 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>預約借車</title>
+    
+    <!-- 1. 引入 flatpickr 的 CSS 樣式表 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <!-- 2. 引入您專案的共用 CSS -->
     <link rel="stylesheet" href="./css/style.css">
+
+    <!-- 3. 針對此頁面的額外樣式 -->
     <style>
         .step { display: none; }
         .step.active { display: block; }
+
         .car-list-item {
             display: flex;
             align-items: center;
@@ -27,7 +35,7 @@
 <body>
     <div id="loading-overlay">載入中...</div>
     <div class="container">
-       <h1>預約借車</h1>
+        <h1>預約借車</h1>
 
         <!-- 步驟一：選擇時間 -->
         <div id="step1" class="step active">
@@ -35,19 +43,18 @@
             <form id="time-form">
                 <div class="form-group">
                     <label for="start-time">開始時間</label>
-                    <input type="datetime-local" id="start-time" required>
-                    <!-- 【新增】用於顯示格式化時間的 span -->
-                    <div id="start-time-preview" class="datetime-preview"></div>
+                    <!-- 【修改】將 type 改為 "text"，並加上 readonly 防止手動輸入 -->
+                    <input type="text" id="start-time" placeholder="點擊選擇時間..." readonly="readonly" required>
                 </div>
                 <div class="form-group">
                     <label for="end-time">結束時間</label>
-                    <input type="datetime-local" id="end-time" required>
-                    <!-- 【新增】用於顯示格式化時間的 span -->
-                    <div id="end-time-preview" class="datetime-preview"></div>
+                    <!-- 【修改】將 type 改為 "text" -->
+                    <input type="text" id="end-time" placeholder="點擊選擇時間..." readonly="readonly" required>
                 </div>
                 <button type="submit">查詢可用車輛</button>
             </form>
         </div>
+
         <!-- 步驟二：選擇車輛與填寫資料 -->
         <div id="step2" class="step">
             <h2>步驟 2: 選擇車輛並填寫資訊</h2>
@@ -71,7 +78,11 @@
         <div id="message-box" class="message" style="display: none;"></div>
     </div>
 
+    <!-- 4. 引入必要的 JavaScript 檔案 -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- 引入 flatpickr 的繁體中文語系檔 -->
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/zh-tw.js"></script>
     <script src="./js/main.js"></script>
     <script src="./js/booking.js"></script>
 </body>
