@@ -21,17 +21,19 @@
     </header>
 
     <main class="nav-menu">
-        <a href="guide.html">ℹ️ 使用指南</a>
+        <!-- 管理員按鈕，預設隱藏 -->
+        <a id="admin-menu-button" href="admin.html" class="admin-link" style="display: none;">⚙️ 管理員功能</a>   
+        <!-- 使用者按鈕 -->
         <a href="profile.html">📝 個人資料</a>
         <a href="booking.html">📅 預約借車</a>
         <a href="action.html">🔑 領車 / 還車</a>
         <a href="status.html">🔍 查詢我的預約</a>
         <a href="history.html">✍️ 修改歷史記錄</a>
         <a href="upload.html">📷 拍照上傳</a>
+        <a href="guide.html">ℹ️ 使用指南</a>
         <a href="#" class="disabled" onclick="event.preventDefault(); alert('此功能即將推出！');">📊 個人統計</a>
         
-        <!-- 管理員按鈕，預設隱藏 -->
-        <a id="admin-menu-button" href="admin.html" class="admin-link" style="display: none;">⚙️ 管理員功能</a>
+        
     </main>
     
     <footer class="footer">
