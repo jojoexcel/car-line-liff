@@ -10,7 +10,7 @@ async function initializeAdminPage() {
     // 1. 獲取所有需要操作的 HTML 元素
     const authPanel = document.getElementById('auth-panel');
     const managementPanel = document.getElementById('admin-menu-container');
-
+    const quotaInfoElem = document.getElementById('quota-info'); // 【新增】
     // 確保關鍵的 authPanel 存在，否則後續操作無意義
     if (!authPanel) {
         console.error("Fatal Error: HTML element with id 'auth-panel' not found.");
@@ -47,6 +47,18 @@ async function initializeAdminPage() {
             // 顯示真正的管理員選單
             if (managementPanel) {
                 managementPanel.style.display = 'block';
+            }
+
+            // 【新增】權限通過後，去獲取訊息額度
+            quotaInfoElem.style.display = 'block';
+            const quotaResult = await callGasApi('getPushMessageCount');
+            if (quotaResult.status === 'success') {
+                const used = quotaResult.data.totalUsage;
+                // 假設您的免費額度是 200
+                const remaining = 200 - used;
+                quotaInfoElem.innerHTML = `本月 Push Message 訊息已使用 <strong>${used}</strong> 則，剩餘 <strong>${remaining}</strong> 則。`;
+            } else {
+                quotaInfoElem.textContent = '無法獲取訊息額度資訊。';
             }
 
             // TODO: 在此處可以加入載入其他管理功能的初始邏輯
