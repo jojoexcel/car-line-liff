@@ -1,26 +1,145 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>公務車系統 - 主選單</title>
-    <script src="./js/version.js"></script><script src="./js/loader.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公務車系統 - 主選單</title>
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
     <script>loadCSS('./css/style.css');</script>
     <style>
-        :root{--dark-bg:#1c1c1e;--primary-text:#fff;--secondary-text:#8e8e93;--accent-color:#34c759;--card-bg:#2c2c2e;--card-border:#3a3a3c;--admin-bg:#5856d6;--admin-border:#8e8e93;--admin-text:#fff}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background-color:var(--dark-bg);color:var(--primary-text);margin:0;padding:1.5em;display:flex;flex-direction:column;min-height:calc(100vh - 3em)}.header{text-align:center;padding-bottom:20px;margin-bottom:30px}.header h1{margin:0;font-size:1.8em;color:var(--primary-text)}.header p{margin:8px 0 0;font-size:1.1em;color:var(--accent-color);font-weight:500}.nav-menu{display:grid;grid-template-columns:1fr 1fr;gap:15px;width:100%;max-width:600px;margin:0 auto}.nav-menu a{display:flex;flex-direction:column;align-items:center;justify-content:center;background-color:var(--card-bg);color:var(--primary-text);padding:20px 10px;text-decoration:none;text-align:center;border-radius:12px;border:1px solid var(--card-border);font-size:1em;font-weight:500;transition:background-color .2s,transform .2s;min-height:70px;box-shadow:0 2px 4px rgba(0,0,0,.2)}.nav-menu a:active{transform:scale(.96);background-color:#3a3a3c}.nav-menu a.admin-link{grid-column:1 / -1;background-color:var(--admin-bg);border-color:var(--admin-border);color:var(--admin-text)}.nav-menu a.disabled{background-color:#1c1c1e;color:var(--secondary-text);cursor:not-allowed;border-style:dashed}.nav-menu a.disabled:active{transform:none}.footer{text-align:center;margin-top:auto;padding-top:30px;font-size:.8em;color:var(--secondary-text)}
+        :root {
+            --dark-bg: #1c1c1e;
+            --primary-text: #fff;
+            --secondary-text: #8e8e93;
+            --accent-color: #34c759;
+            --card-bg: #2c2c2e;
+            --card-border: #3a3a3c;
+            --admin-bg: #5856d6;
+            --admin-border: #8e8e93;
+            --admin-text: #fff
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--primary-text);
+            margin: 0;
+            padding: 1.5em;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 3em)
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 30px
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            color: var(--primary-text)
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            font-size: 1.1em;
+            color: var(--accent-color);
+            font-weight: 500
+        }
+
+        .nav-menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto
+        }
+
+        .nav-menu a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--card-bg);
+            color: var(--primary-text);
+            padding: 20px 10px;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            font-size: 1em;
+            font-weight: 500;
+            transition: background-color .2s, transform .2s;
+            min-height: 70px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .2)
+        }
+
+        .nav-menu a:active {
+            transform: scale(.96);
+            background-color: #3a3a3c
+        }
+
+        .nav-menu a.admin-link {
+            grid-column: 1 / -1;
+            background-color: var(--admin-bg);
+            border-color: var(--admin-border);
+            color: var(--admin-text)
+        }
+
+        .nav-menu a.disabled {
+            background-color: #1c1c1e;
+            color: var(--secondary-text);
+            cursor: not-allowed;
+            border-style: dashed
+        }
+
+        .nav-menu a.disabled:active {
+            transform: none
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: auto;
+            padding-top: 30px;
+            font-size: .8em;
+            color: var(--secondary-text)
+        }
     </style>
 </head>
+
 <body>
-    <div id="loading-overlay"></div><header class="header"><h1>公務車借用系統</h1><p id="welcome-message">載入中...</p></header>
+    <div id="loading-overlay"></div>
+    <header class="header">
+        <h1>公務車借用系統</h1>
+        <p id="welcome-message">載入中...</p>
+    </header>
     <main class="nav-menu">
-        <a href="guide.html">ℹ️ 使用指南</a><a href="profile.html">📝 個人資料</a><a href="booking.html">📅 預約借車</a><a href="action.html">🔑 領車 / 還車</a><a href="status.html">🔍 查詢我的預約</a><a href="history.html">✍️ 修改歷史記錄</a><a href="upload.html">📷 拍照上傳</a>
-        <a href="#" class="disabled" onclick="event.preventDefault(); showModalAlert('此功能即將推出！');">📊 個人統計</a>
         <a id="admin-menu-button" href="admin.html" class="admin-link" style="display: none;">⚙️ 管理員功能</a>
+        <a href="guide.html">ℹ️ 使用指南</a><a href="profile.html">📝 個人資料</a><a href="booking.html">📅 預約借車</a><a
+            href="action.html">🔑 領車 / 還車</a><a href="status.html">🔍 查詢我的預約</a><a href="history.html">✍️ 修改歷史記錄</a><a
+            href="upload.html">📷 拍照上傳</a>
+        <a href="#" class="disabled" onclick="event.preventDefault(); showModalAlert('此功能即將推出！');">📊 個人統計</a>
+
     </main>
-    <footer class="footer"><p>© 台中學院-公務車管理</p></footer>
-    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title">系統訊息</h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
+    <footer class="footer">
+        <p>© 台中學院-公務車管理</p>
+    </footer>
+    <div id="custom-alert-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h4 id="alert-title">系統訊息</h4>
+            <p id="alert-text"></p>
+            <div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div>
+        </div>
+    </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         loadJS(['./js/main.js'], () => {
-            (async function() {
+            (async function () {
                 const welcomeEl = document.getElementById('welcome-message');
                 const liffProfile = await initializeLiff();
                 if (!liffProfile) { if (welcomeEl) welcomeEl.textContent = '載入失敗或需登入'; return; }
@@ -36,4 +155,5 @@
         });
     </script>
 </body>
+
 </html>
