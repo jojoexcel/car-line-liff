@@ -3,119 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>領車 / 還車</title>
-     <!-- 1. 永遠最先載入版本號和載入器 -->
+    <title>領車 / 還車 - 公務車系統</title>
     <script src="./js/version.js"></script>
     <script src="./js/loader.js"></script>
-    <!-- 3. 使用載入器動態載入我們自己的 CSS (自動加版本號) -->
-    <script>
-        loadCSS('./css/style.css');
-    </script>
+    <script>loadCSS('./css/style.css');</script>
     <style>
-        /* 針對此頁面的額外樣式 */
-        .action-list button {
-            width: 100%; /* 讓按鈕填滿寬度 */
-            background-color: #f8f9fa;
-            color: #343a40;
-            border: 1px solid #dee2e6;
-            margin-bottom: 10px;
-            text-align: left;
-            padding: 15px 20px; /* 增加內距，更好點擊 */
-            font-size: 1em;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .action-list button:hover {
-            background-color: #e9ecef;
-        }
-        /* 領車按鈕的左側標示 */
-        .action-list button.pickup {
-            border-left: 5px solid #28a745; /* 綠色代表領車 */
-        }
-        /* 還車按鈕的左側標示 */
-        .action-list button.return {
-            border-left: 5px solid #ffc107; /* 橘色代表還車 */
-        }
+        .action-list button { width: 100%; background-color: #f8f9fa; color: #343a40; border: 1px solid #dee2e6; margin-bottom: 10px; text-align: left; padding: 15px 20px; font-size: 1em; cursor: pointer; transition: background-color 0.2s; }
+        .action-list button:hover { background-color: #e9ecef; }
+        .action-list button.pickup { border-left: 5px solid #28a745; }
+        .action-list button.return { border-left: 5px solid #ffc107; }
     </style>
 </head>
 <body>
-    <!-- 全域載入遮罩 -->
-    <div id="loading-overlay">檢查中...</div>
-
+    <div id="loading-overlay"></div>
     <div class="container">
         <h1>領車 / 還車</h1>
-
-        <!-- 步驟一：動作選擇列表 -->
         <div id="selection-panel" style="display: none;">
             <h2>請選擇您要執行的操作</h2>
-            <div id="action-list" class="action-list">
-                <!-- JavaScript 會在這裡動態產生按鈕 -->
-            </div>
+            <div id="action-list" class="action-list"></div>
         </div>
-
-        <!-- 初始/錯誤訊息面板 -->
-        <div id="info-panel">
-            <p id="info-text">正在檢查您的預約狀態...</p>
-        </div>
-
-        <!-- 領車表單 -->
+        <div id="info-panel"><p id="info-text">正在檢查您的預約狀態...</p></div>
         <form id="pickup-form" style="display: none;">
             <h2>領車作業</h2>
-            <div class="form-group">
-                <label>預計領取車輛</label>
-                <input type="text" id="pickup-car-plate" disabled>
-            </div>
-            <div class="form-group">
-                <label for="pickup-mileage">目前公里數 (必填)</label>
-                <input type="number" id="pickup-mileage" inputmode="numeric" required>
-            </div>
-            <div class="form-group">
-                <label for="pickup-notes">備註 (車況、特殊事項)</label>
-                <input type="text" id="pickup-notes" placeholder="可留空">
-            </div>
+            <div class="form-group"><label>預計領取車輛</label><input type="text" id="pickup-car-plate" disabled></div>
+            <div class="form-group"><label for="pickup-mileage">目前公里數 (必填)</label><input type="number" id="pickup-mileage" inputmode="numeric" required></div>
+            <div class="form-group"><label for="pickup-notes">備註 (車況、特殊事項)</label><input type="text" id="pickup-notes" placeholder="可留空"></div>
             <button type="submit">確認領車</button>
         </form>
-
-        <!-- 還車表單 -->
         <form id="return-form" style="display: none;">
             <h2>還車作業</h2>
-            <div class="form-group">
-                <label>預計歸還車輛</label>
-                <input type="text" id="return-car-plate" disabled>
-            </div>
-            <div class="form-group">
-                <label for="return-mileage">目前公里數 (必填)</label>
-                <input type="number" id="return-mileage" inputmode="numeric" required>
-            </div>
-            <div class="form-group">
-                <label for="return-gas-fee">加油金額 (若無則填 0)</label>
-                <input type="number" id="return-gas-fee" inputmode="numeric" value="0">
-            </div>
-            <div class="form-group">
-                <label for="return-notes">備註 (車況、特殊事項)</label>
-                <input type="text" id="return-notes" placeholder="可留空">
-            </div>
+            <div class="form-group"><label>預計歸還車輛</label><input type="text" id="return-car-plate" disabled></div>
+            <div class="form-group"><label for="return-mileage">目前公里數 (必填)</label><input type="number" id="return-mileage" inputmode="numeric" required></div>
+            <div class="form-group"><label for="return-gas-fee">加油金額 (若無則填 0)</label><input type="number" id="return-gas-fee" inputmode="numeric" value="0"></div>
+            <div class="form-group"><label for="return-notes">備註 (車況、特殊事項)</label><input type="text" id="return-notes" placeholder="可留空"></div>
             <button type="submit">確認還車</button>
         </form>
-
-        <!-- 全域訊息提示框 -->
-        <div id="message-box" class="message" style="display: none;"></div>
     </div>
-
-    <!-- 必要的 JS 檔案 -->
+    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title"></h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
+    <div id="custom-confirm-modal" class="modal-overlay"><div class="modal-content"><h4 id="confirm-title"></h4><p id="confirm-text"></p><div class="modal-buttons"><button id="confirm-ok-btn" class="ok-btn">確定</button><button id="confirm-cancel-btn" class="cancel-btn">取消</button></div></div></div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        loadJS(
-            [
-                './js/main.js',
-                './js/action.js' // 載入 action.js
-            ],
-            function() {
-                // 當載入完成後，呼叫 action.js 裡的初始化函式
-                initializeActionPage();
-            }
-        );
+        loadJS(['./js/main.js', './js/action.js'], () => { initializeActionPage(); });
     </script>
-
 </body>
 </html>

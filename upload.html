@@ -1,76 +1,30 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>拍照上傳</title>
-    <!-- 1. 載入版本號和載入器 -->
-    <script src="./js/version.js"></script>
-    <script src="./js/loader.js"></script>
-
-    <!-- 2. 動態載入 CSS -->
-    <script>
-        loadCSS('./css/style.css');
-    </script>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>拍照上傳 - 公務車系統</title>
+    <script src="./js/version.js"></script><script src="./js/loader.js"></script>
+    <script>loadCSS('./css/style.css');</script>
     <style>
-        #record-info {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        #preview-area {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .preview-img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
+        #record-info{background-color:#f8f9fa;border:1px solid #dee2e6;padding:15px;border-radius:5px;margin-bottom:20px}#preview-area{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}.preview-img{width:100px;height:100px;object-fit:cover;border:1px solid #ddd;border-radius:5px}
     </style>
 </head>
-
 <body>
-    <div id="loading-overlay">載入中...</div>
+    <div id="loading-overlay"></div>
     <div class="container">
         <h1>拍照上傳</h1>
-
-        <!-- 顯示要上傳的記錄資訊 -->
-        <div id="record-info" style="display: none;">
-            <p>您正在為以下記錄上傳照片：</p>
-            <strong id="record-details"></strong>
-        </div>
-
-        <!-- 預設顯示的訊息 -->
-        <div id="info-panel">
-            <p id="info-text">正在讀取您最後一筆領/還車記錄...</p>
-        </div>
-
-        <!-- 上傳照片區塊 (預設隱藏) -->
+        <div id="record-info" style="display: none;"><p>您正在為以下記錄上傳照片：</p><strong id="record-details"></strong></div>
+        <div id="info-panel"><p id="info-text">正在讀取您最後一筆領/還車記錄...</p></div>
         <div id="upload-panel" style="display: none;">
-            <div class="form-group">
-                <label for="file-input">選擇照片 (最多5張)</label>
-                <input type="file" id="file-input" accept="image/*" multiple>
-            </div>
+            <div class="form-group"><label for="file-input">選擇照片 (最多5張)</label><input type="file" id="file-input" accept="image/*" multiple></div>
             <div id="preview-area"></div>
             <button id="submit-btn" disabled>上傳照片</button>
         </div>
-
-        <div id="message-box" class="message" style="display: none;"></div>
     </div>
-
+    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title"></h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
+    <div id="custom-confirm-modal" class="modal-overlay"><div class="modal-content"><h4 id="confirm-title"></h4><p id="confirm-text"></p><div class="modal-buttons"><button id="confirm-ok-btn" class="ok-btn">確定</button><button id="confirm-cancel-btn" class="cancel-btn">取消</button></div></div></div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="./js/upload.js"></script>
+    <script>
+        loadJS(['./js/main.js', './js/upload.js'], () => { initializeUploadPage(); });
+    </script>
 </body>
-
 </html>

@@ -1,112 +1,37 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>預約借車</title>
-    
-    <!-- 1. 載入版本號和載入器 -->
-    <script src="./js/version.js"></script> 
-    <script src="./js/loader.js"></script>
-    
-    <!-- 2. 動態載入 CSS -->
-    <script>
-        loadCSS('./css/style.css');
-    </script>
-
-    <!-- 3. 頁面獨有的 CSS -->
-    <style>
-        .step { display: none; }
-        .step.active { display: block; }
-
-        /* 時間預覽的樣式 */
-        .datetime-preview {
-            font-size: 0.9em;
-            color: #6c757d; /* 灰色輔助文字 */
-            padding-left: 5px;
-            margin-top: 5px;
-            height: 1.2em; /* 給一個固定高度，避免頁面因文字出現而跳動 */
-        }
-
-        .car-list-item {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        .car-list-item input[type="radio"] {
-            margin-right: 15px;
-            width: 20px;
-            height: 20px;
-        }
-    </style>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>預約借車</title>
+    <script src="./js/version.js"></script><script src="./js/loader.js"></script>
+    <script>loadCSS('./css/style.css');</script>
+    <style>.step{display:none}.step.active{display:block}.datetime-preview{font-size:.9em;color:#6c757d;padding-left:5px;margin-top:5px;height:1.2em}.car-list-item{display:flex;align-items:center;padding:10px;border:1px solid var(--border-color);border-radius:5px;margin-bottom:10px;cursor:pointer}.car-list-item input[type=radio]{margin-right:15px;width:20px;height:20px}</style>
 </head>
 <body>
-    <div id="loading-overlay">載入中...</div>
+    <div id="loading-overlay"></div>
     <div class="container">
         <h1>預約借車</h1>
-
-        <!-- 步驟一：選擇時間 -->
         <div id="step1" class="step active">
             <h2>步驟 1: 選擇借用時間</h2>
             <form id="time-form">
-                <div class="form-group">
-                    <label for="start-time">開始時間</label>
-                    <!-- 【關鍵】使用原生的 datetime-local -->
-                    <input type="datetime-local" id="start-time" required>
-                    <!-- 用於顯示格式化時間的 div -->
-                    <div id="start-time-preview" class="datetime-preview"></div>
-                </div>
-                <div class="form-group">
-                    <label for="end-time">結束時間</label>
-                    <input type="datetime-local" id="end-time" required>
-                    <div id="end-time-preview" class="datetime-preview"></div>
-                </div>
+                <div class="form-group"><label for="start-time">開始時間</label><input type="datetime-local" id="start-time" required><div id="start-time-preview" class="datetime-preview"></div></div>
+                <div class="form-group"><label for="end-time">結束時間</label><input type="datetime-local" id="end-time" required><div id="end-time-preview" class="datetime-preview"></div></div>
                 <button type="submit">查詢可用車輛</button>
             </form>
         </div>
-
-        <!-- 步驟二：選擇車輛與填寫資料 -->
         <div id="step2" class="step">
             <h2>步驟 2: 選擇車輛並填寫資訊</h2>
             <form id="details-form">
-                <div class="form-group">
-                    <label>可用車輛</label>
-                    <div id="car-list"></div>
-                </div>
-                <div class="form-group">
-                    <label for="reason">申請事由</label>
-                    <input type="text" id="reason" required>
-                </div>
-                <div class="form-group">
-                    <label for="location">起訖地點</label>
-                    <input type="text" id="location" placeholder="例如: 台北-台中" required>
-                </div>
+                <div class="form-group"><label>可用車輛</label><div id="car-list"></div></div>
+                <div class="form-group"><label for="reason">申請事由</label><input type="text" id="reason" required></div>
+                <div class="form-group"><label for="location">起訖地點</label><input type="text" id="location" placeholder="例如: 台北-台中" required></div>
                 <button type="submit">確認預約</button>
             </form>
         </div>
-
-        <div id="message-box" class="message" style="display: none;"></div>
     </div>
-
-    <!-- 4. 引入 JavaScript -->
+    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title">系統訊息</h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-     <script>
-        // 【關鍵修改】使用新的 loadJS 和回呼函式
-        loadJS(
-            [
-                './js/main.js',    // 先載入共用函式庫
-                './js/booking.js'  // 再載入本頁專屬的邏輯
-            ], 
-            function() {
-                // 這個函式會在 main.js 和 booking.js 都載入完成後才執行
-                // 此時，initializeBookingPage 函式已經存在於全域作用域中
-                initializeBookingPage();
-            }
-        );
+    <script>
+        loadJS(['./js/main.js', './js/booking.js'], () => { initializeBookingPage(); });
     </script>
 </body>
 </html>

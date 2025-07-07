@@ -62,19 +62,6 @@ async function initializeUserManagementPage() {
 
     // === 輔助函式 ===
 
-    function customAlert(message) {
-        if (alertText) alertText.textContent = message;
-        if (alertModal) alertModal.style.display = 'flex';
-    }
-
-    function customConfirm(message) {
-        return new Promise((resolve) => {
-            resolveConfirm = resolve;
-            if (confirmText) confirmText.textContent = message;
-            if (confirmModal) confirmModal.style.display = 'flex';
-        });
-    }
-
     function generateActionButtons(status) {
         if (status === '待審核') {
             return `<button class="approve-btn">✅ 通過</button><button class="reject-btn">❌ 拒絕</button>`;
@@ -121,14 +108,14 @@ async function initializeUserManagementPage() {
             recentUsers = result.data; // 快取使用者列表
             renderUserList(recentUsers);
         } else {
-            customAlert('載入使用者失敗: ' + result.message);
+           displayModalAlert('載入使用者失敗: ' + result.message);
         }
     }
 
     function openEditModal(userId) {
         const userToEdit = recentUsers.find(u => u.userId === userId);
         if (!userToEdit) {
-            customAlert("找不到該使用者的詳細資料。");
+           displayModalAlert("找不到該使用者的詳細資料。");
             return;
         }
         editUserIdInput.value = userToEdit.userId;
@@ -147,7 +134,7 @@ async function initializeUserManagementPage() {
         e.preventDefault();
         const phoneRegex = /^09\d{2}-\d{6}$/;
         if (!phoneRegex.test(editPhoneInput.value)) {
-            customAlert("電話格式不正確，應為 09xx-xxxxxx。");
+           displayModalAlert("電話格式不正確，應為 09xx-xxxxxx。");
             return;
         }
         const params = {
@@ -159,11 +146,11 @@ async function initializeUserManagementPage() {
         };
         const result = await callGasApi('updateUserByAdmin', params);
         if (result.status === 'success') {
-            customAlert('使用者資料已成功更新！');
+           displayModalAlert('使用者資料已成功更新！');
             closeEditModal();
             loadUsers(currentFilter, searchInput.value);
         } else {
-            customAlert('更新失敗: ' + result.message);
+           displayModalAlert('更新失敗: ' + result.message);
         }
     }
 
@@ -199,10 +186,10 @@ async function initializeUserManagementPage() {
             if (isConfirmed) {
                 const result = await callGasApi('updateUserByAdmin', { targetUserId, newStatus });
                 if (result.status === 'success') {
-                    customAlert('狀態更新成功！');
+                   displayModalAlert('狀態更新成功！');
                     loadUsers(currentFilter, searchInput.value);
                 } else {
-                    customAlert('更新失敗: ' + result.message);
+                   displayModalAlert('更新失敗: ' + result.message);
                 }
             }
         });

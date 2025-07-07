@@ -137,3 +137,54 @@ button:disabled {
     font-weight: bold;
     display: none; /* Default hidden */
 }
+/* === 【新增/確認】模態視窗通用樣式 === */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: none; /* 預設隱藏 */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 15px;
+    box-sizing: border-box;
+}
+.modal-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
+    color: #333;
+}
+.modal-content h4 {
+    margin-top: 0;
+    font-size: 1.2em;
+    color: var(--primary-color);
+}
+.modal-content p {
+    margin: 15px 0;
+    font-size: 1em;
+    line-height: 1.6;
+}
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+.modal-buttons button {
+    width: 100px;
+    border-radius: 5px;
+}
+.modal-buttons .ok-btn {
+    background-color: var(--primary-color);
+}
+.modal-buttons .cancel-btn {
+    background-color: #6c757d;
+}

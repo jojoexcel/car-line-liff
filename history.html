@@ -1,96 +1,32 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>修改歷史記錄</title>
-    <!-- 1. 載入版本號和載入器 -->
-    <script src="./js/version.js"></script>
-    <script src="./js/loader.js"></script>
-
-    <!-- 2. 動態載入 CSS -->
-    <script>
-        loadCSS('./css/style.css');
-    </script>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>修改歷史記錄 - 公務車系統</title>
+    <script src="./js/version.js"></script><script src="./js/loader.js"></script>
+    <script>loadCSS('./css/style.css');</script>
     <style>
-        .record-list-item {
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .record-list-item:hover {
-            background-color: #f8f9fa;
-        }
-
-        .record-list-item.selected {
-            background-color: #e0f2f1;
-            border-color: var(--primary-color);
-        }
-
-        #edit-form {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid #eee;
-        }
+        .record-list-item{padding:15px;border:1px solid #ddd;border-radius:5px;margin-bottom:10px;cursor:pointer;transition:background-color .2s}.record-list-item:hover{background-color:#f8f9fa}.record-list-item.selected{background-color:#e0f2f1;border-color:var(--primary-color)}#edit-form{margin-top:20px;padding-top:20px;border-top:2px solid #eee}
     </style>
 </head>
-
 <body>
-    <div id="loading-overlay">載入中...</div>
+    <div id="loading-overlay"></div>
     <div class="container">
-        <h1>修改歷史記錄</h1>
-        <p>請選擇一筆過去 7 天內的記錄進行修改。</p>
-
-        <div id="record-list">
-            <!-- JS 會在這裡動態產生記錄列表 -->
-        </div>
-
-        <div id="info-panel" style="display: none;">
-            <p id="info-text"></p>
-        </div>
-
-        <!-- 修改表單 (預設隱藏) -->
+        <h1>修改歷史記錄</h1><p>請選擇一筆過去 7 天內的記錄進行修改。</p>
+        <div id="record-list"></div>
+        <div id="info-panel" style="display: none;"><p id="info-text"></p></div>
         <form id="edit-form" style="display: none;">
             <h3>修改資料</h3>
-            <div class="form-group">
-                <label for="edit-mileage">公里數</label>
-                <input type="number" id="edit-mileage" inputmode="numeric">
-            </div>
-            <div class="form-group">
-                <label for="edit-gas">加油金額</label>
-                <input type="number" id="edit-gas" inputmode="numeric">
-            </div>
-            <div class="form-group">
-                <label for="edit-notes">備註</label>
-                <input type="text" id="edit-notes">
-            </div>
+            <div class="form-group"><label for="edit-mileage">公里數</label><input type="number" id="edit-mileage" inputmode="numeric"></div>
+            <div class="form-group"><label for="edit-gas">加油金額</label><input type="number" id="edit-gas" inputmode="numeric"></div>
+            <div class="form-group"><label for="edit-notes">備註</label><input type="text" id="edit-notes"></div>
             <button type="submit">儲存修改</button>
         </form>
-
-        <div id="message-box" class="message" style="display: none;"></div>
     </div>
-
+    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title"></h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
+    <div id="custom-confirm-modal" class="modal-overlay"><div class="modal-content"><h4 id="confirm-title"></h4><p id="confirm-text"></p><div class="modal-buttons"><button id="confirm-ok-btn" class="ok-btn">確定</button><button id="confirm-cancel-btn" class="cancel-btn">取消</button></div></div></div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        // 【關鍵修改】使用新的 loadJS 和回呼函式
-        loadJS(
-            [
-                './js/main.js',    // 先載入共用函式庫
-                './js/history.js'  // 再載入本頁專屬的邏輯
-            ],
-            function () {
-                // 這個函式會在 main.js 和 booking.js 都載入完成後才執行
-                // 此時，initializeBookingPage 函式已經存在於全域作用域中
-                initializeBookingPage();
-            }
-        );
+        loadJS(['./js/main.js', './js/history.js'], () => { initializeHistoryPage(); });
     </script>
-
 </body>
-
 </html>
