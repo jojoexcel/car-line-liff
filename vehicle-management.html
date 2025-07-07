@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>車輛管理</title>
+    <!-- 引入共用資源 -->
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
+    <script> loadCSS('./css/style.css'); </script>
+    <!-- 頁面獨有 CSS -->
+    <style>
+        #add-vehicle-btn { margin-bottom: 20px; background-color: var(--primary-color); }
+        .vehicle-table { width: 100%; border-collapse: collapse; }
+        .vehicle-table th, .vehicle-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        .vehicle-table th { background-color: #f2f2f2; color: #333; }
+        .edit-form-modal { /* ... (可參考 status.html 的模態視窗樣式) ... */ }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">載入中...</div>
+    <div class="container">
+        <h1>車輛管理</h1>
+        <div id="auth-panel">正在驗證管理員權限...</div>
+
+        <!-- 管理介面 (預設隱藏) -->
+        <div id="management-panel" style="display: none;">
+            <button id="add-vehicle-btn">＋ 新增車輛</button>
+            <table class="vehicle-table">
+                <thead>
+                    <tr>
+                        <th>車牌</th>
+                        <th>規格</th>
+                        <th>狀態</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="vehicle-list">
+                    <!-- JS 會在這裡動態產生車輛列表 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 新增/修改車輛的模態視窗 -->
+    <div id="vehicle-modal" class="edit-form-modal" style="display: none;">
+        <div class="modal-content">
+            <h3 id="modal-title">新增車輛</h3>
+            <form id="vehicle-form">
+                <input type="hidden" id="modal-mode">
+                <input type="hidden" id="modal-rowNum">
+                <div class="form-group">
+                    <label for="modal-plate">車牌號碼</label>
+                    <input type="text" id="modal-plate" required>
+                </div>
+                <div class="form-group">
+                    <label for="modal-spec">車輛規格</label>
+                    <input type="text" id="modal-spec" required>
+                </div>
+                <div class="form-group">
+                    <label for="modal-qrcode">QR Code 內容 (選填)</label>
+                    <input type="text" id="modal-qrcode">
+                </div>
+                <div class="form-group">
+                    <label for="modal-status">狀態</label>
+                    <select id="modal-status" required>
+                        <option value="可借">可借</option>
+                        <option value="維修中">維修中</option>
+                        <option value="停用">停用</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modal-description">說明 (選填)</label>
+                    <input type="text" id="modal-description">
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" id="modal-save-btn">儲存</button>
+                    <button type="button" id="modal-cancel-btn">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS 載入 -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        loadJS(
+            ['./js/main.js', './js/vehicle-management.js'],
+            function() { initializeVehicleManagementPage(); }
+        );
+    </script>
+</body>
+</html>
