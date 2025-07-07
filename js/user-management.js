@@ -87,7 +87,7 @@ async function initializeUserManagementPage() {
         if (status === '通過' || status === '管理者' || status === '開發者') {
             return `<button class="edit-btn">✏️ 編輯</button><button class="suspend-btn">🚫 停權</button>`;
         }
-        if (status === '停權') {
+        if (status === '停權'|| status === '拒絕') {
             return `<button class="edit-btn">✏️ 編輯</button><button class="approve-btn">✅ 復權</button>`;
         }
         return '';
@@ -95,6 +95,10 @@ async function initializeUserManagementPage() {
 
     /**
      * 渲染從後端獲取的使用者列表。
+     * @param {Array<object>} users 使用者資料陣列
+     */
+    /**
+     * 渲染從後端獲取的使用者列表 (使用 LINE 預設頭像版)
      * @param {Array<object>} users 使用者資料陣列
      */
     function renderUserList(users) {
@@ -107,8 +111,15 @@ async function initializeUserManagementPage() {
         users.forEach(user => {
             const item = document.createElement('div');
             item.className = 'user-list-item';
+
+            // 【關鍵修改】
+            // 檢查 user.linePicUrl 是否存在且不為空。
+            // 如果不存在，就使用我們自己專案中的預設頭像圖片路徑。
+            const avatarUrl = user.linePicUrl || './images/default-avatar.png';
+
             item.innerHTML = `
-                <img src="${user.linePicUrl || 'https://via.placeholder.com/50'}" alt="avatar" class="user-avatar">
+                <img src="${avatarUrl}" alt="avatar" class="user-avatar"
+                     onerror="this.onerror=null;this.src='./images/default-avatar.png';">
                 <div class="user-info">
                     <strong>${user.name || 'N/A'}</strong>
                     <span>${user.unit || 'N/A'} / ${user.title || 'N/A'}</span>
