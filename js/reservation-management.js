@@ -26,21 +26,21 @@ async function initializeReservationManagementPage() {
     try {
         liffProfile = await initializeLiff();
         if (!liffProfile) {
-            if(authPanel) authPanel.textContent = 'LIFF 初始化失敗或未登入。';
+            if (authPanel) authPanel.textContent = 'LIFF 初始化失敗或未登入。';
             return;
         }
         const result = await callGasApi('getUserProfile', { userId: liffProfile.userId });
         if (result.status === 'found' && (result.data.status === '管理者' || result.data.status === '開發者')) {
             adminSystemProfile = result.data;
-            if(authPanel) authPanel.style.display = 'none';
-            if(managementPanel) managementPanel.style.display = 'block';
+            if (authPanel) authPanel.style.display = 'none';
+            if (managementPanel) managementPanel.style.display = 'block';
         } else {
-            if(authPanel) authPanel.textContent = '權限不足！此頁面僅供管理員使用。';
+            if (authPanel) authPanel.textContent = '權限不足！此頁面僅供管理員使用。';
             return;
         }
-    } catch(e) {
+    } catch (e) {
         console.error("Page initialization failed during auth check:", e);
-        if(authPanel) authPanel.textContent = '頁面初始化時發生嚴重錯誤。';
+        if (authPanel) authPanel.textContent = '頁面初始化時發生嚴重錯誤。';
         return; // 驗證失敗，不繼續執行後續程式碼
     }
 
@@ -93,11 +93,14 @@ async function initializeReservationManagementPage() {
         buttonElement.textContent = '取消中...';
 
         const params = {
+            role: 'admin', // <--- 新增角色參數
             rowNum: rowNum,
-            userId: targetUserId,
-            adminId: liffProfile.userId,
-            reason: `(由管理員 ${adminSystemProfile.name} 強制取消) ${cancelReason}`
+            userId: targetUserId, // 注意，這裡依然是被取消者的 ID
+            reason: cancelReason,
+            // 將管理者 Profile 物件轉成 JSON 字串傳過去
+            adminProfileJson: JSON.stringify(adminSystemProfile)
         };
+
 
         const result = await callGasApi('cancelReservation', params);
 

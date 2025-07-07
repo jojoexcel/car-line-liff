@@ -61,8 +61,9 @@ async function initializeStatusPage() {
 
             // 【關鍵修改】準備發送給後端的參數，只包含必要欄位
             const params = {
+                role: 'user', // <--- 新增角色參數
                 rowNum: rowNum,
-                userId: liffProfile.userId, // 傳入操作者本人(也就是使用者)的 ID
+                userId: liffProfile.userId,
                 reason: reason
             };
 
