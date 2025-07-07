@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理員功能</title>
+    <link rel="stylesheet" href="./css/style.css?v=1.0.1">
+    <style>
+        .admin-menu a {
+            display: block;
+            background-color: var(--error-color); /* 管理功能用紅色系突顯 */
+            color: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .admin-menu a:hover {
+            background-color: #c9302c;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay"></div>
+    <div class="container">
+        <h1>管理員功能</h1>
+        <p id="admin-welcome">正在驗證您的管理員權限...</p>
+
+        <!-- 管理員選單，預設隱藏 -->
+        <div id="admin-menu-container" class="admin-menu" style="display: none;">
+            <a href="#">1. 使用者審核</a>
+            <a href="#">2. 預約情況總覽</a>
+            <a href="#">3. 領還車記錄查詢</a>
+            <a href="#">4. 使用者資料管理</a>
+            <hr>
+            <a href="index.html" style="background-color: #6c757d;">返回主選單</a>
+        </div>
+    </div>
+    
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="./js/main.js?v=1.0.1"></script>
+    <script>
+        // admin.html 專用的 JS
+        async function initializeAdminPage() {
+            const liffProfile = await initializeLiff();
+            if (!liffProfile) return;
+
+            try {
+                const result = await callGasApi('getUserProfile', { userId: liffProfile.userId });
+                const adminWelcome = document.getElementById('admin-welcome');
+                const adminMenu = document.getElementById('admin-menu-container');
+
+                if (result.status === 'found' && (result.data.status === '管理者' || result.data.status === '開發者')) {
+                    // 權限驗證通過
+                    adminWelcome.textContent = `權限已確認，${result.data.name}。請選擇要執行的操作。`;
+                    adminMenu.style.display = 'block';
+                } else {
+                    // 權限不足
+                    adminWelcome.style.color = 'var(--error-color)';
+                    adminWelcome.textContent = '權限不足！此頁面僅供管理員使用。';
+                }
+            } catch (error) {
+                document.getElementById('admin-welcome').textContent = '驗證權限時發生錯誤。';
+            }
+        }
+        initializeAdminPage();
+    </script>
+</body>
+</html>
