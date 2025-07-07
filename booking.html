@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>預約借車</title>
     
-    <!-- 1. 引入 flatpickr 的 CSS 樣式表 -->
+ 
+   <!-- 1. 永遠最先載入版本號檔案 -->
+    <script src="./js/version.js"></script> 
+    <!-- 2. 接著載入共用載入器 -->
+    <script src="./js/loader.js"></script>
+    <!-- 3.1 引入 flatpickr 的 CSS 樣式表 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
-    <!-- 2. 引入您專案的共用 CSS -->
-    <link rel="stylesheet" href="./css/style.css">
+   
+    <!-- 3.2 使用載入器動態載入 CSS -->
+    <script>
+        loadCSS('./css/style.css');
+    </script>
 
     <!-- 3. 針對此頁面的額外樣式 -->
     <style>
@@ -84,7 +91,10 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <!-- 引入 flatpickr 的繁體中文語系檔 -->
     <script src="https://npmcdn.com/flatpickr/dist/l10n/zh-tw.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="./js/booking.js"></script>
+    <script > loadJS([
+            './js/main.js',
+            './js/booking.js' // 每個頁面這裡不同
+        ]);</script>
+ 
 </body>
 </html>
