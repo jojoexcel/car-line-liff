@@ -1,4 +1,3 @@
-// js/user-management.js
 async function initializeUserManagementPage() {
     const authPanel = document.getElementById('auth-panel');
     const managementPanel = document.getElementById('management-panel');
@@ -7,7 +6,7 @@ async function initializeUserManagementPage() {
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
 
-    let currentFilter = 'pending'; // 預設顯示待審核
+    let currentFilter = 'pending';
 
     // 權限驗證
     const liffProfile = await initializeLiff();
@@ -20,31 +19,7 @@ async function initializeUserManagementPage() {
     authPanel.style.display = 'none';
     managementPanel.style.display = 'block';
 
-    // 渲染使用者列表的函式
-    function renderUserList(users) {
-        userListElem.innerHTML = '';
-        if (users.length === 0) {
-            userListElem.innerHTML = '<p style="text-align: center; color: #888;">此分類下沒有使用者。</p>';
-            return;
-        }
-        users.forEach(user => {
-            const item = document.createElement('div');
-            item.className = 'user-list-item';
-            item.innerHTML = `
-                <img src="${user.linePicUrl || 'https://via.placeholder.com/50'}" alt="avatar" class="user-avatar">
-                <div class="user-info">
-                    <strong>${user.name}</strong>
-                    <span>${user.unit} / ${user.title}</span>
-                </div>
-                <div class="user-actions" data-user-id="${user.userId}">
-                    ${generateActionButtons(user.status)}
-                </div>
-            `;
-            userListElem.appendChild(item);
-        });
-    }
-
-    // 根據使用者狀態產生對應的操作按鈕
+    // 根據使用者狀態產生操作按鈕的 HTML 字串
     function generateActionButtons(status) {
         if (status === '待審核') {
             return `<button class="approve-btn">✅ 通過</button><button class="reject-btn">❌ 拒絕</button>`;
@@ -58,7 +33,35 @@ async function initializeUserManagementPage() {
         return '';
     }
 
-    // 載入使用者資料
+    // 渲染使用者列表
+    function renderUserList(users) {
+        userListElem.innerHTML = '';
+        if (users.length === 0) {
+            userListElem.innerHTML = '<p style="text-align: center; color: #888;">此分類下沒有使用者。</p>';
+            return;
+        }
+        users.forEach(user => {
+            const item = document.createElement('div');
+            item.className = 'user-list-item';
+
+            // 【核心】這個 HTML 結構會配合上面的 CSS 達到您要的排版效果
+            item.innerHTML = `
+                <img src="${user.linePicUrl || 'https://via.placeholder.com/50'}" alt="avatar" class="user-avatar">
+                <div class="user-info">
+                    <strong>${user.name || 'N/A'}</strong>
+                    <span>${user.unit || 'N/A'} / ${user.title || 'N/A'}</span>
+                    <br>
+                    <small style="color: #888;">狀態: ${user.status}</small>
+                </div>
+                <div class="user-actions" data-user-id="${user.userId}">
+                    ${generateActionButtons(user.status)}
+                </div>
+            `;
+            userListElem.appendChild(item);
+        });
+    }
+
+    // 從後端載入使用者資料
     async function loadUsers(filter, searchTerm = '') {
         const result = await callGasApi('getUsersByFilter', { filter, searchTerm });
         if (result.status === 'success') {
@@ -68,11 +71,12 @@ async function initializeUserManagementPage() {
         }
     }
 
-    // 處理所有操作按鈕的點擊事件 (事件委派)
+    // 處理所有操作按鈕的點擊事件
     userListElem.addEventListener('click', async (e) => {
         const target = e.target;
         const actionContainer = target.closest('.user-actions');
         if (!actionContainer) return;
+
         const targetUserId = actionContainer.dataset.userId;
         let newStatus = '';
         let confirmMessage = '';
@@ -84,7 +88,6 @@ async function initializeUserManagementPage() {
             newStatus = '停權';
             confirmMessage = '確定要拒絕/停權此使用者嗎？';
         } else if (target.classList.contains('edit-btn')) {
-            // TODO: 編輯功能，可以彈出一個模態視窗來修改資料
             alert('編輯功能尚未實作。');
             return;
         } else {
@@ -108,12 +111,12 @@ async function initializeUserManagementPage() {
             filterButtons.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
             currentFilter = e.target.dataset.filter;
-            searchInput.value = ''; // 切換篩選時清空搜尋
+            searchInput.value = '';
             loadUsers(currentFilter);
         }
     });
 
-    // 搜尋按鈕事件
+    // 搜尋事件
     searchBtn.addEventListener('click', () => loadUsers(currentFilter, searchInput.value));
     searchInput.addEventListener('keyup', (e) => {
         if (e.key === 'Enter') loadUsers(currentFilter, searchInput.value);
