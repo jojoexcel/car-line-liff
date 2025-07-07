@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>借車預約管理</title>
+    <!-- 引入共用資源 -->
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
+    <script> loadCSS('./css/style.css'); </script>
+    <!-- 頁面獨有 CSS (可從 status.html 複製) -->
+    <style>
+        .reservation-card { /* ... */ }
+        .cancel-btn { /* ... */ }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">載入中...</div>
+    <div class="container">
+        <h1>未來有效借車管理</h1>
+        <div id="auth-panel">正在驗證管理員權限...</div>
+
+        <div id="management-panel" style="display: none;">
+            <p>此處顯示所有尚未過期且未被取消的預約。</p>
+            <div id="reservation-list">
+                <!-- JS 會在這裡動態產生預約卡片 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 取消原因的模態視窗 (與 status.html 共用) -->
+    <div id="cancel-modal-overlay" style="display: none;">
+        <!-- ... (從 status.html 複製模態視窗的 HTML 結構) ... -->
+    </div>
+
+    <!-- JS 載入 -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        loadJS(
+            ['./js/main.js', './js/reservation-management.js'],
+            function() { initializeReservationManagementPage(); }
+        );
+    </script>
+</body>
+</html>
