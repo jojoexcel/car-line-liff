@@ -63,6 +63,28 @@
         .details-content ol {
             padding-left: 20px
         }
+
+        /* 【新增】車輛資訊卡片的樣式 */
+        .vehicle-info-card {
+            border: 1px solid #e0e0e0;
+            border-left: 4px solid #007bff;
+            /* 預設藍色邊框 */
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            background-color: #fff;
+            /* 讓卡片在灰色背景上更突出 */
+        }
+
+        .vehicle-info-card h4 {
+            margin: 0 0 8px 0;
+            color: #333;
+        }
+
+        .vehicle-info-card p {
+            margin: 4px 0;
+            color: #555;
+        }
     </style>
 </head>
 
@@ -70,6 +92,71 @@
     <div class="container guide-container">
         <h1>公務車借用系統 - 使用指南</h1>
         <p id="welcome-message" style="text-align: center; margin-bottom: 2em; color: #555;"></p>
+        <details open> <!-- 加上 open 屬性，讓這個區塊預設是展開的 -->
+            <summary>📜 公務車使用原則與重要事項</summary>
+            <div class="details-content">
+
+                <h3>一、 總則與借用資格</h3>
+                <ol>
+                    <li>公務車借用以<strong>公務需求</strong>為主，並以<strong>當日借還</strong>為原則。</li>
+                    <li>公務車「借用人」欄位須為本單位之<strong>全兼職同仁</strong>。</li>
+                    <li>若實際駕駛「使用人」為義工，需先經該單位主管同意後，始得以申請借用，並由申請之同仁全權負責相關事宜。</li>
+                </ol>
+
+                <h3>二、 領車與使用規範</h3>
+                <ol>
+                    <li>領車前請務必仔細檢視車輛內外觀，若有任何異樣（如刮痕、損傷），請立即透過電話向管理窗口報備，以免責任難以釐清。</li>
+                    <li>請隨時保持車內清潔。離車前，請務必檢查是否遺留個人物品，並將所有垃圾隨手帶下車。</li>
+                    <li>使用中若發現車況有嚴重異常，判斷有安全疑慮時，請立即停止行駛，並電話向管理窗口報備，就近尋找合格車廠維修。</li>
+                    <li>若車況異常但無立即安全考量，請於還車時在系統的「備註」欄中詳細註明，並主動通知管理窗口。</li>
+                </ol>
+
+                <h3>三、 還車、加油與記錄</h3>
+                <ol>
+                    <li><strong>加油原則：</strong>每次使用里程若超過 <strong>30 公里</strong>，務必將油箱**加滿**後再歸還車輛。</li>
+                    <li>還車時，請務必在系統的「還車作業」中，確實填入**還車時間**及**最終的公里數**。</li>
+                    <li>鑰匙歸還時，請確認交還至管理窗口。</li>
+                    <li>車輛請務必停放回其**指定的正確停車位**（鑰匙袋上亦有註明）。</li>
+                </ol>
+
+                <h3>四、 罰則與責任歸屬</h3>
+                <ol>
+                    <li>若發生交通事故，請依『車輛事故處理原則』處理，立即報警並通知管理窗口。</li>
+                    <li>本單位公務車均有投保第三人責任險，但**不包含車體損失險**。若因駕駛人責任造成車輛損傷，需由該駕駛人負責相關差額賠償。</li>
+                    <li>以下情況達 <strong>3 次</strong>者，將暫停借用權限，並於週會中公布名單：
+                        <ul>
+                            <li>鑰匙未依規定歸還。</li>
+                            <li>車輛歸還時未依規定加滿油。</li>
+                            <li>車輛有明顯故障或異常卻未回報。</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <hr style="margin: 25px 0;">
+
+                <h3>五、 各車輛資訊與注意事項</h3>
+                <div class="vehicle-info-card">
+                    <h4>1560-U7 (5人座)</h4>
+                    <p><strong>停車位置：</strong> B2-2</p>
+                    <p><strong>加油統編：</strong> 16301262 (里仁)</p>
+                </div>
+                <div class="vehicle-info-card">
+                    <h4>0522-U3</h4>
+                    <p><strong>停車位置：</strong> B2-12號</p>
+                    <p><strong>加油統編：</strong> 18031700 (財團法人福智佛教基金會)</p>
+                </div>
+                <div class="vehicle-info-card">
+                    <h4>AGS-1376 (8人座廂型車)</h4>
+                    <p><strong>停車位置：</strong> 台中市西屯區惠中路99號</p>
+                    <p><strong>加油統編：</strong> 16301262 (里仁)</p>
+                </div>
+                <div class="vehicle-info-card" style="border-left-color: #f0ad4e;">
+                    <h4>0893-DL (7人座廂型車)</h4>
+                    <p><strong>特別注意：</strong> 此車輛由**資材組**保管，借用時需經資材組同意並親自領取鑰匙。</p>
+                </div>
+
+            </div>
+        </details>
         <details>
             <summary>1. 首次使用：建立個人資料</summary>
             <div class="details-content">
