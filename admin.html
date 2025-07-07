@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,21 +9,46 @@
     <script src="./js/loader.js"></script>
     <script>loadCSS('./css/style.css');</script>
     <style>
-        .admin-menu a{display:block;background-color:var(--primary-color);color:#fff;padding:15px;margin-bottom:15px;text-decoration:none;text-align:center;border-radius:8px;font-size:1.1em;font-weight:500}
-        .admin-menu a:hover{background-color:#00a300}
-        #auth-panel{text-align:center;padding:20px;background-color:#f8f9fa;color:#333;border-radius:8px;margin-bottom:20px}
+        .admin-menu a {
+            display: block;
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 500
+        }
+
+        .admin-menu a:hover {
+            background-color: #00a300
+        }
+
+        #auth-panel {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            border-radius: 8px;
+            margin-bottom: 20px
+        }
     </style>
 </head>
+
 <body>
     <div id="loading-overlay"></div>
     <div class="container">
         <h1>管理員功能</h1>
-        <div id="auth-panel"><p>正在驗證您的管理員權限...</p></div>
-<!-- 【新增】顯示訊息額度的區塊 -->
-        <div id="quota-info" style="text-align: center; margin-bottom: 20px; padding: 10px; background-color: #fff8e1; border-radius: 5px; color: #663c00; display: none;">
-            讀取中...
+        <div id="info-panel" class="info-panel">
+            <p id="info-text">正在驗證您的管理員權限...</p>
         </div>
-        <p id="admin-welcome">正在驗證您的管理員權限...</p>
+        <!-- 【新增】顯示訊息額度的區塊 -->
+        <div id="quota-info" class="info-panel" style="display: none;">
+            <!-- JS 會填入額度資訊 -->
+        </div>
+
         <p></p>
         <div id="admin-menu-container" class="admin-menu" style="display: none;">
             <a href="user-management.html">使用者管理</a>
@@ -34,8 +60,18 @@
     </div>
 
     <!-- 【關鍵新增】補上所有頁面都需要的模態視窗結構 -->
-    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title"></h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
-    <div id="custom-confirm-modal" class="modal-overlay"><div class="modal-content"><h4 id="confirm-title"></h4><p id="confirm-text"></p><div class="modal-buttons"><button id="confirm = document.getElementById('auth-panel');
+    <div id="custom-alert-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h4 id="alert-title"></h4>
+            <p id="alert-text"></p>
+            <div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div>
+        </div>
+    </div>
+    <div id="custom-confirm-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h4 id="confirm-title"></h4>
+            <p id="confirm-text"></p>
+            <div class="modal-buttons"><button id="confirm = document.getElementById('auth-panel');
     const managementPanel = document.getElementById('management-panel');
 
     try {
@@ -47,7 +83,10 @@
         }
 
         // 【可疑點 2】
-        const result-ok-btn" class="ok-btn">確定</button><button id="confirm-cancel-btn" class="cancel-btn">取消</button></div></div></div>
+        const result-ok-btn" class="ok-btn">確定</button><button id="confirm-cancel-btn" class="cancel-btn">取消</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
@@ -57,4 +96,5 @@
         );
     </script>
 </body>
+
 </html>

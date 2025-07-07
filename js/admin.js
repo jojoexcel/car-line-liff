@@ -1,81 +1,75 @@
+// js/admin.js (最終修正版)
+
 /**
  * 檔案說明：管理者功能主頁 (admin.html) 的主要邏輯。
- * 核心功能：驗證使用者是否為管理員，然後顯示對應的功能選單。
- * 版本：2.0 (格式化與錯誤處理強化版)
+ * 核心功能：驗證管理者權限，並顯示功能選單和訊息額度。
+ * 版本：2.1 (修正變數名稱不一致的錯誤)
  */
 async function initializeAdminPage() {
-
     console.log("Initializing Admin Page Logic...");
 
     // 1. 獲取所有需要操作的 HTML 元素
-    const authPanel = document.getElementById('auth-panel');
+    const infoPanel = document.getElementById('info-panel');
+    const infoText = document.getElementById('info-text'); // 在 info-panel 內的 p 標籤
     const managementPanel = document.getElementById('admin-menu-container');
-    const quotaInfoElem = document.getElementById('quota-info'); // 【新增】
-    // 確保關鍵的 authPanel 存在，否則後續操作無意義
-    if (!authPanel) {
-        console.error("Fatal Error: HTML element with id 'auth-panel' not found.");
+    const quotaInfoElem = document.getElementById('quota-info');
+
+    // 關鍵防呆：如果頁面的基礎結構不存在，直接報錯並終止
+    if (!infoPanel || !infoText || !managementPanel || !quotaInfoElem) {
+        console.error("Fatal Error: One or more required HTML elements are missing.");
+        alert("頁面結構錯誤，無法載入管理功能。");
         return;
     }
 
     try {
-        // 2. 初始化 LIFF 並獲取使用者 LINE Profile
+        // 2. 初始化 LIFF
         const liffProfile = await initializeLiff();
-
-        // 如果 initializeLiff() 失敗或需要登入，它會回傳 null
         if (!liffProfile) {
-            // initializeLiff 內部出錯時會自己彈出提示，這裡只需更新 UI 即可
-            authPanel.textContent = 'LIFF 初始化失敗，請重新整理頁面。';
+            infoText.textContent = 'LIFF 初始化失敗，請重新整理頁面。';
+            infoPanel.style.color = 'red';
             return;
         }
 
-        // 3. 呼叫後端 API，獲取使用者在我們系統中的資料 (包含 status)
+        // 3. 呼叫後端 API 驗證身份
         const result = await callGasApi('getUserProfile', { userId: liffProfile.userId });
-
-        // 4. 檢查從後端回傳的結果是否有效
         if (!result || !result.status) {
-            // 如果 callGasApi 內部出錯，它會自己彈出提示，這裡只更新 UI
-            authPanel.textContent = '無法從後端獲取您的資料，請稍後再試。';
+            infoText.textContent = '無法從後端獲取您的資料，請稍後再試。';
+            infoPanel.style.color = 'red';
             return;
         }
 
-        // 5. 根據使用者狀態，決定顯示內容
+        // 4. 根據使用者狀態決定顯示內容
         if (result.status === 'found' && (result.data.status === '管理者' || result.data.status === '開發者')) {
             // --- 權限驗證通過 ---
+            infoPanel.style.display = 'none'; // 隱藏初始訊息面板
+            managementPanel.style.display = 'block'; // 顯示管理員選單
 
-            // 隱藏「驗證中」的面板
-            authPanel.style.display = 'none';
-            // 顯示真正的管理員選單
-            if (managementPanel) {
-                managementPanel.style.display = 'block';
-            }
-
-            // 【新增】權限通過後，去獲取訊息額度
+            // 獲取並顯示訊息額度
             quotaInfoElem.style.display = 'block';
+            quotaInfoElem.textContent = '正在讀取訊息額度...';
+
             const quotaResult = await callGasApi('getPushMessageCount');
             if (quotaResult.status === 'success') {
                 const used = quotaResult.data.totalUsage;
-                // 假設您的免費額度是 200
-                const remaining = 200 - used;
-                quotaInfoElem.innerHTML = `本月 Push Message 訊息已使用 <strong>${used}</strong> 則，剩餘 <strong>${remaining}</strong> 則。`;
+                const freeLimit = 200; // 您可以將此設為常數或從後端獲取
+                const remaining = freeLimit - used;
+                quotaInfoElem.innerHTML = `本月 Push Message 已用: <strong>${used}</strong> / ${freeLimit} (剩餘 <strong>${remaining}</strong> 則)`;
             } else {
                 quotaInfoElem.textContent = '無法獲取訊息額度資訊。';
+                quotaInfoElem.style.backgroundColor = '#f8d7da';
             }
-
-            // TODO: 在此處可以加入載入其他管理功能的初始邏輯
-            // 例如: loadDashboardData();
 
         } else {
             // --- 權限不足 ---
-
-            // 無論是找不到使用者(not_found)，還是一般使用者，都視為權限不足
-            authPanel.style.color = 'var(--error-color)';
-            authPanel.innerHTML = '<p>權限不足！</p><small>此頁面僅供管理員使用，或您的帳號尚未在系統中建立資料。</small>';
+            infoPanel.style.color = 'var(--error-color)';
+            infoText.innerHTML = '<strong>權限不足！</strong><br><small>此頁面僅供管理員使用。</small>';
         }
 
     } catch (error) {
-        // 6. 捕捉任何在 try 區塊中未被預期的錯誤
+        // 5. 捕捉任何未預期的錯誤
         console.error("A critical error occurred in initializeAdminPage:", error);
-        authPanel.style.color = 'var(--error-color)';
-        authPanel.textContent = `發生嚴重錯誤，請聯繫開發人員。(${error.message})`;
+        infoPanel.style.display = 'block'; // 確保訊息面板可見
+        infoPanel.style.color = 'var(--error-color)';
+        infoText.innerHTML = `<strong>發生嚴重錯誤</strong><br><small>${error.message}</small>`;
     }
 }
