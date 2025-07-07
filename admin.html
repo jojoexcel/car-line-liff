@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理員功能</title>
+
     <!-- 1. 載入版本號和載入器 -->
     <script src="./js/version.js"></script>
     <script src="./js/loader.js"></script>
@@ -13,11 +13,12 @@
     <script>
         loadCSS('./css/style.css');
     </script>
+
+    <!-- 3. 頁面獨有 CSS -->
     <style>
         .admin-menu a {
             display: block;
             background-color: var(--error-color);
-            /* 管理功能用紅色系突顯 */
             color: white;
             padding: 15px;
             margin-bottom: 15px;
@@ -26,15 +27,20 @@
             border-radius: 8px;
             font-size: 1.1em;
             font-weight: 500;
-            transition: background-color 0.2s;
         }
-
         .admin-menu a:hover {
             background-color: #c9302c;
         }
+        #admin-welcome {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
-
 <body>
     <div id="loading-overlay"></div>
     <div class="container">
@@ -52,21 +58,19 @@
         </div>
     </div>
 
+    <!-- 4. 引入 JS -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<script>
-        // 【關鍵修改】使用新的 loadJS 和回呼函式
+    <script>
         loadJS(
             [
-                './js/main.js',    // 先載入共用函式庫
-                './js/admin.js'  // 再載入本頁專屬的邏輯
+                './js/main.js',
+                './js/admin.js' // 載入 admin.js
             ],
             function() {
-                // 這個函式會在 main.js 和 booking.js 都載入完成後才執行
-                // 此時，initializeBookingPage 函式已經存在於全域作用域中
-                initializeBookingPage();
+                // 當載入完成後，呼叫 admin.js 裡的初始化函式
+                initializeAdminPage();
             }
         );
     </script>
 </body>
-
 </html>
