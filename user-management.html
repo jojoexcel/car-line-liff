@@ -1,29 +1,147 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>使用者管理 - 公務車系統</title>
-    <script src="./js/version.js"></script><script src="./js/loader.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用者管理 - 公務車系統</title>
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
     <script>loadCSS('./css/style.css');</script>
     <style>
-        .filter-controls,.search-controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}.filter-controls button{width:auto;flex-grow:1;background-color:#6c757d}.filter-controls button.active{background-color:var(--primary-color);font-weight:700}.search-controls input{flex-grow:1}.user-list-item{display:flex;flex-wrap:wrap;align-items:center;padding:15px 10px;border-bottom:1px solid #eee}.user-avatar{width:50px;height:50px;border-radius:50%;margin-right:15px}.user-info{flex-grow:1;line-height:1.4}.user-info strong{display:block;font-size:1.1em}.user-info span{font-size:.9em;color:#666}.user-actions{width:100%;margin-top:10px;display:flex;justify-content:flex-end;gap:10px}.user-actions button{width:auto;padding:6px 16px;font-size:.9em;margin-left:0}.user-actions .approve-btn{background-color:var(--success-color)}.user-actions .reject-btn,.user-actions .suspend-btn{background-color:var(--error-color)}.user-actions .edit-btn{background-color:#6c757d}
+        .filter-controls,
+        .search-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px
+        }
+
+        .filter-controls button {
+            width: auto;
+            flex-grow: 1;
+            background-color: #6c757d
+        }
+
+        .filter-controls button.active {
+            background-color: var(--primary-color);
+            font-weight: 700
+        }
+
+        .search-controls input {
+            flex-grow: 1
+        }
+
+        .user-list-item {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 15px 10px;
+            border-bottom: 1px solid #eee
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px
+        }
+
+        .user-info {
+            flex-grow: 1;
+            line-height: 1.4
+        }
+
+        .user-info strong {
+            display: block;
+            font-size: 1.1em
+        }
+
+        .user-info span {
+            font-size: .9em;
+            color: #666
+        }
+
+        .user-actions {
+            width: 100%;
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px
+        }
+
+        .user-actions button {
+            width: auto;
+            padding: 6px 16px;
+            font-size: .9em;
+            margin-left: 0
+        }
+
+        .user-actions .approve-btn {
+            background-color: var(--success-color)
+        }
+
+        .user-actions .reject-btn,
+        .user-actions .suspend-btn {
+            background-color: var(--error-color)
+        }
+
+        .user-actions .edit-btn {
+            background-color: #6c757d
+        }
     </style>
 </head>
+
 <body>
     <div id="loading-overlay"></div>
     <div class="container">
-        <h1>使用者管理</h1><div id="auth-panel">正在驗證管理員權限...</div>
+        <h1>使用者管理</h1>
+        <div id="auth-panel">正在驗證管理員權限...</div>
         <div id="management-panel" style="display: none;">
-            <div id="filter-buttons" class="filter-controls"><button data-filter="pending" class="active">待審核</button><button data-filter="approved">已通過</button><button data-filter="suspended">已停權</button><button data-filter="all">全部</button></div>
-            <div class="search-controls"><input type="search" id="search-input" placeholder="依姓名或單位搜尋..."><button id="search-btn">搜尋</button></div>
+            <div id="filter-buttons" class="filter-controls"><button data-filter="pending"
+                    class="active">待審核</button><button data-filter="approved">已通過</button><button
+                    data-filter="suspended">已停權</button><button data-filter="all">全部</button></div>
+            <div class="search-controls"><input type="search" id="search-input" placeholder="依姓名或單位搜尋..."><button
+                    id="search-btn">搜尋</button></div>
             <div id="user-list"></div>
         </div>
     </div>
-    <div id="custom-confirm-modal" class="modal-overlay"><div class="modal-content"><h4 id="confirm-title"></h4><p id="confirm-text"></p><div class="modal-buttons"><button id="confirm-ok-btn" class="ok-btn">確定</button><button id="confirm-cancel-btn" class="cancel-btn">取消</button></div></div></div>
-    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title"></h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
-    <div id="edit-user-modal" class="modal-overlay"><div class="modal-content"><h3 id="edit-modal-title">編輯使用者資料</h3><form id="edit-user-form"><input type="hidden" id="edit-userId"><div class="form-group" style="text-align:left"><label for="edit-name">用戶名稱</label><input type="text" id="edit-name" required></div><div class="form-group" style="text-align:left"><label for="edit-phone">電話 (格式: 09xx-xxxxxx)</label><input type="tel" id="edit-phone" pattern="09\d{2}-\d{6}" required></div><div class="form-group" style="text-align:left"><label for="edit-unit">單位</label><input type="text" id="edit-unit" required></div><div class="form-group" style="text-align:left"><label for="edit-title">職務</label><input type="text" id="edit-title" required></div><div class="modal-buttons"><button type="submit" class="ok-btn">儲存變更</button><button type="button" id="edit-cancel-btn" class="cancel-btn">取消</button></div></form></div></div>
+    <div id="custom-confirm-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h4 id="confirm-title"></h4>
+            <p id="confirm-text"></p>
+            <div class="modal-buttons"><button id="confirm-ok-btn" class="ok-btn">確定</button><button
+                    id="confirm-cancel-btn" class="cancel-btn">取消</button></div>
+        </div>
+    </div>
+    <div id="custom-alert-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h4 id="alert-title"></h4>
+            <p id="alert-text"></p>
+            <div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div>
+        </div>
+    </div>
+    <div id="edit-user-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="edit-modal-title">編輯使用者資料</h3>
+            <form id="edit-user-form"><input type="hidden" id="edit-userId">
+                <div class="form-group" style="text-align:left"><label for="edit-name">用戶名稱</label><input type="text"
+                        id="edit-name" required></div>
+                <div class="form-group" style="text-align:left"><label for="edit-phone">電話 (格式:
+                        09xx-xxxxxx)</label><input type="tel" id="edit-phone" pattern="09\d{2}-\d{6}" required></div>
+                <div class="form-group" style="text-align:left"><label for="edit-unit">單位</label><input type="text"
+                        id="edit-unit" required></div>
+                <div class="form-group" style="text-align:left"><label for="edit-title">職務</label><input type="text"
+                        id="edit-title" required></div>
+                <div class="modal-buttons"><button type="submit" class="ok-btn">儲存變更</button><button type="button"
+                        id="edit-cancel-btn" class="cancel-btn">取消</button></div>
+            </form>
+        </div>
+    </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         loadJS(['./js/main.js', './js/user-management.js'], () => { initializeUserManagementPage(); });
     </script>
 </body>
+
 </html>
