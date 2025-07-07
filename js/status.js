@@ -61,10 +61,9 @@ async function initializeStatusPage() {
 
             // 【關鍵修改】準備發送給後端的參數，只包含必要欄位
             const params = {
-                role: 'user', // <--- 新增角色參數
                 rowNum: rowNum,
-                userId: liffProfile.userId,
-                reason: reason
+                reason: cancelReason,
+                operatorId: liffProfile.userId // 【修改】操作者就是使用者本人
             };
 
             console.log("Sending params to cancelReservation:", params); // 除錯用

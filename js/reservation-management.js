@@ -93,12 +93,9 @@ async function initializeReservationManagementPage() {
         buttonElement.textContent = '取消中...';
 
         const params = {
-            role: 'admin', // <--- 新增角色參數
             rowNum: rowNum,
-            userId: targetUserId, // 注意，這裡依然是被取消者的 ID
             reason: cancelReason,
-            // 將管理者 Profile 物件轉成 JSON 字串傳過去
-            adminProfileJson: JSON.stringify(adminSystemProfile)
+            operatorId: liffProfile.userId // 【修改】操作者永遠是登入的管理者本人
         };
 
 
