@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>領車 / 還車</title>
-    <link rel="stylesheet" href="./css/style.css">
+     <!-- 1. 永遠最先載入版本號和載入器 -->
+    <script src="./js/version.js"></script> 
+    <script src="./js/loader.js"></script>
+    <!-- 3. 使用載入器動態載入我們自己的 CSS (自動加版本號) -->
+    <script>
+        loadCSS('./css/style.css');
+    </script>
     <style>
         /* 針對此頁面的額外樣式 */
         .action-list button {
@@ -98,7 +104,12 @@
 
     <!-- 必要的 JS 檔案 -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="./js/action.js"></script>
+    <script>
+        loadJS([
+            './js/main.js',
+            './js/action.js' // 載入此頁面專屬的 JS
+        ]);
+    </script>
+
 </body>
 </html>
