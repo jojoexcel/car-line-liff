@@ -1,26 +1,55 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>管理員功能</title>
-    <script src="./js/version.js"></script><script src="./js/loader.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理員功能</title>
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
     <script>loadCSS('./css/style.css');</script>
     <style>
-        .admin-menu a{display:block;background-color:var(--error-color);color:#fff;padding:15px;margin-bottom:15px;text-decoration:none;text-align:center;border-radius:8px;font-size:1.1em;font-weight:500}.admin-menu a:hover{background-color:#c9302c}#admin-welcome{text-align:center;padding:20px;background-color:#f8f9fa;color:#333;border-radius:8px;margin-bottom:20px}
+        .admin-menu a{display:block;background-color:var(--primary-color);color:#fff;padding:15px;margin-bottom:15px;text-decoration:none;text-align:center;border-radius:8px;font-size:1.1em;font-weight:500}
+        .admin-menu a:hover{background-color:#00a300}
+        #auth-panel{text-align:center;padding:20px;background-color:#f8f9fa;color:#333;border-radius:8px;margin-bottom:20px}
     </style>
 </head>
 <body>
     <div id="loading-overlay"></div>
     <div class="container">
-        <h1>管理員功能</h1><p id="admin-welcome">正在驗證您的管理員權限...</p>
+        <h1>管理員功能</h1>
+        <div id="auth-panel"><p>正在驗證您的管理員權限...</p></div>
+
         <div id="admin-menu-container" class="admin-menu" style="display: none;">
-            <a href="user-management.html">使用者管理</a><a href="vehicle-management.html">車輛管理</a><a href="reservation-management.html">預約總覽管理</a>
-            <hr><a href="index.html" style="background-color: #6c757d;">返回主選單</a>
+            <a href="user-management.html">使用者管理</a>
+            <a href="vehicle-management.html">車輛管理</a>
+            <a href="reservation-management.html">預約總覽管理</a>
+            <hr>
+            <a href="index.html" style="background-color: #6c757d;">返回主選單</a>
         </div>
     </div>
-    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title">系統訊息</h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
+
+    <!-- 【關鍵新增】補上所有頁面都需要的模態視窗結構 -->
+    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title"></h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
+    <div id="custom-confirm-modal" class="modal-overlay"><div class="modal-content"><h4 id="confirm-title"></h4><p id="confirm-text"></p><div class="modal-buttons"><button id="confirm = document.getElementById('auth-panel');
+    const managementPanel = document.getElementById('management-panel');
+
+    try {
+        // 【可疑點 1】
+        const liffProfile = await initializeLiff();
+        if (!liffProfile) {
+            authPanel.textContent = 'LIFF 初始化失敗或未登入。';
+            return;
+        }
+
+        // 【可疑點 2】
+        const result-ok-btn" class="ok-btn">確定</button><button id="confirm-cancel-btn" class="cancel-btn">取消</button></div></div></div>
+
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        loadJS(['./js/main.js', './js/admin.js'], () => { initializeAdminPage(); });
+        loadJS(
+            ['./js/main.js', './js/admin.js'],
+            () => { initializeAdminPage(); }
+        );
     </script>
 </body>
 </html>
