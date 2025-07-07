@@ -5,22 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>預約借車</title>
     
-    <!-- 1. 永遠最先載入版本號和載入器 -->
+    <!-- 1. 載入版本號和載入器 -->
     <script src="./js/version.js"></script> 
     <script src="./js/loader.js"></script>
     
-    <!-- 2. 引入外部函式庫的 CSS (靜態連結) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
-   
-    <!-- 3. 使用載入器動態載入我們自己的 CSS (自動加版本號) -->
+    <!-- 2. 動態載入 CSS -->
     <script>
         loadCSS('./css/style.css');
     </script>
 
-    <!-- 4. 頁面獨有的 CSS (如果有的話) -->
+    <!-- 3. 頁面獨有的 CSS -->
     <style>
         .step { display: none; }
         .step.active { display: block; }
+
+        /* 時間預覽的樣式 */
+        .datetime-preview {
+            font-size: 0.9em;
+            color: #6c757d; /* 灰色輔助文字 */
+            padding-left: 5px;
+            margin-top: 5px;
+            height: 1.2em; /* 給一個固定高度，避免頁面因文字出現而跳動 */
+        }
 
         .car-list-item {
             display: flex;
@@ -49,12 +55,15 @@
             <form id="time-form">
                 <div class="form-group">
                     <label for="start-time">開始時間</label>
-                    <!-- 【關鍵】使用 type="text" 給 flatpickr 接管 -->
-                    <input type="text" id="start-time" placeholder="點擊選擇時間..." readonly="readonly" required>
+                    <!-- 【關鍵】使用原生的 datetime-local -->
+                    <input type="datetime-local" id="start-time" required>
+                    <!-- 用於顯示格式化時間的 div -->
+                    <div id="start-time-preview" class="datetime-preview"></div>
                 </div>
                 <div class="form-group">
                     <label for="end-time">結束時間</label>
-                    <input type="text" id="end-time" placeholder="點擊選擇時間..." readonly="readonly" required>
+                    <input type="datetime-local" id="end-time" required>
+                    <div id="end-time-preview" class="datetime-preview"></div>
                 </div>
                 <button type="submit">查詢可用車輛</button>
             </form>
@@ -83,17 +92,13 @@
         <div id="message-box" class="message" style="display: none;"></div>
     </div>
 
-    <!-- 5. 引入所有 JavaScript -->
+    <!-- 4. 引入 JavaScript -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <!-- 引入外部函式庫的 JS (靜態連結) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/zh-tw.js"></script>
-
-    <!-- 6. 使用載入器動態載入我們自己的 JS (自動加版本號) -->
     <script>
+        // 使用我們的載入器來載入 JS，確保快取被破壞
         loadJS([
             './js/main.js',
-            './js/booking.js' // 載入此頁面專屬的 JS
+            './js/booking.js'
         ]);
     </script>
 </body>
