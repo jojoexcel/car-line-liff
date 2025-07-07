@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>修改歷史記錄</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <!-- 1. 載入版本號和載入器 -->
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
+
+    <!-- 2. 動態載入 CSS -->
+    <script>
+        loadCSS('./css/style.css');
+    </script>
     <style>
         .record-list-item {
             padding: 15px;
@@ -14,13 +22,16 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
+
         .record-list-item:hover {
             background-color: #f8f9fa;
         }
+
         .record-list-item.selected {
             background-color: #e0f2f1;
             border-color: var(--primary-color);
         }
+
         #edit-form {
             margin-top: 20px;
             padding-top: 20px;
@@ -28,12 +39,13 @@
         }
     </style>
 </head>
+
 <body>
     <div id="loading-overlay">載入中...</div>
     <div class="container">
         <h1>修改歷史記錄</h1>
         <p>請選擇一筆過去 7 天內的記錄進行修改。</p>
-        
+
         <div id="record-list">
             <!-- JS 會在這裡動態產生記錄列表 -->
         </div>
@@ -64,7 +76,21 @@
     </div>
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="./js/history.js"></script>
+  <script>
+        // 【關鍵修改】使用新的 loadJS 和回呼函式
+        loadJS(
+            [
+                './js/main.js',    // 先載入共用函式庫
+                './js/history.js'  // 再載入本頁專屬的邏輯
+            ],
+            function() {
+                // 這個函式會在 main.js 和 booking.js 都載入完成後才執行
+                // 此時，initializeBookingPage 函式已經存在於全域作用域中
+                initializeBookingPage();
+            }
+        );
+    </script>
+
 </body>
+
 </html>

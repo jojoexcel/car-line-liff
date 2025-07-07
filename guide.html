@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>使用指南</title>
-    <link rel="stylesheet" href="./css/style.css?v=1.0.1"> <!-- 記得加上版本號 -->
+   <!-- 1. 載入版本號和載入器 -->
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
+
+    <!-- 2. 動態載入 CSS -->
+    <script>
+        loadCSS('./css/style.css');
+    </script>
     <style>
         /* 針對指南頁面的額外樣式 */
         .guide-container h1 {
@@ -32,7 +39,7 @@
             outline: none; /* 移除點擊時的藍色外框 */
             list-style: none; /* 隱藏原生的小箭頭 */
         }
-        
+
         /* 用偽元素自訂一個漂亮的箭頭 */
         summary::after {
             content: '▼';
@@ -46,7 +53,7 @@
         details[open] > summary::after {
             transform: rotate(180deg);
         }
-        
+
         /* 展開時改變標題背景色 */
         details[open] > summary {
             background-color: #e9ecef;

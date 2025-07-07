@@ -1,4 +1,3 @@
-    <style>
         /* --- 整體頁面樣式 --- */
         :root {
             --dark-bg: #1c1c1e;      /* 更深的背景，接近 iOS 深色模式 */
@@ -91,4 +90,3 @@
             font-size: 0.8em;
             color: var(--secondary-text);
         }
-    </style>
