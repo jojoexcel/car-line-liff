@@ -54,7 +54,6 @@ async function initializeAdminPage() {
                 const freeLimit = 200; // 您可以將此設為常數或從後端獲取
                 const remaining = freeLimit - used;
                 quotaInfoElem.innerHTML = `本月 Push Message 已用: <strong>${used}</strong> / ${freeLimit} (剩餘 <strong>${remaining}</strong> 則) \n 強制取消預約會使用此額度/月` ;
-
             } else {
                 quotaInfoElem.textContent = '無法獲取訊息額度資訊。';
                 quotaInfoElem.style.backgroundColor = '#f8d7da';
