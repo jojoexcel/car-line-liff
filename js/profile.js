@@ -1,6 +1,6 @@
-// js/profile.js
+// js/profile.js (即時驗證版)
 document.addEventListener('DOMContentLoaded', async () => {
-    // 取得 HTML 元素
+    // === DOM 元素快取 ===
     const form = document.getElementById('profile-form');
     const lineNameElem = document.getElementById('line-name');
     const nameElem = document.getElementById('name');
@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const statusElem = document.getElementById('status');
     const submitBtn = document.getElementById('submit-btn');
     const messageBox = document.getElementById('message-box');
+    // 【新增】獲取電話錯誤訊息的元素
+    const phoneErrorElem = document.getElementById('phone-error');
     
     let liffProfile = null;
 
@@ -20,40 +22,70 @@ document.addEventListener('DOMContentLoaded', async () => {
         messageBox.style.display = 'block';
     }
 
-    // 主初始化流程
+  /**
+     * 【新增】即時驗證電話號碼格式的函式
+     */
+    function validatePhone() {
+        const phone = phoneElem.value;
+        // 正規表示式：^ 和 $ 代表從頭到尾都必須完全匹配
+        const phoneRegex = /^09\d{2}-\d{6}$/; 
+
+        if (phoneRegex.test(phone)) {
+            // 格式正確
+            phoneErrorElem.textContent = ''; // 清空錯誤訊息
+            phoneElem.style.borderColor = '#ced4da'; // 恢復正常邊框顏色
+            return true;
+        } else {
+            // 格式錯誤
+            phoneErrorElem.textContent = '格式錯誤，應為 09xx-xxxxxx';
+            phoneElem.style.borderColor = 'var(--error-color)'; // 邊框變紅
+            return false;
+        }
+    }
+
+    /**
+     * 初始化頁面
+     */
     async function initializePage() {
         liffProfile = await initializeLiff();
-        if (!liffProfile) return; // 初始化失敗或跳轉登入
+        if (!liffProfile) return;
 
         lineNameElem.value = liffProfile.displayName;
         
-        // 呼叫 API 取得已儲存的個人資料
         const result = await callGasApi('getUserProfile', { userId: liffProfile.userId });
 
         if (result.status === 'found') {
             const userData = result.data;
-            // 填入既有資料
             nameElem.value = userData.name || '';
             phoneElem.value = userData.phone || '';
             unitElem.value = userData.unit || '';
             titleElem.value = userData.title || '';
             statusElem.value = userData.status || '未知';
             submitBtn.textContent = '修改資料';
+            validatePhone(); // 載入資料後也驗證一次
         } else if (result.status === 'not_found') {
-            // 新使用者
             statusElem.value = '尚未註冊';
             submitBtn.textContent = '建立新資料';
         } else {
-            // 發生錯誤
             showMessage(result.message, 'error');
-            form.style.display = 'none'; // 隱藏表單
+            form.style.display = 'none';
         }
     }
 
-    // 監聽表單提交事件
+    /**
+     * 監聽表單提交事件
+     */
     form.addEventListener('submit', async (e) => {
-        e.preventDefault(); // 防止表單傳統提交
+        e.preventDefault();
+        
+        // 【新增】在提交前，再做一次最終驗證
+        if (!validatePhone()) {
+            alert('電話號碼格式不正確，請修正後再提交！');
+            return;
+        }
+
         submitBtn.disabled = true;
+        submitBtn.textContent = '儲存中...';
 
         const params = {
             userId: liffProfile.userId,
@@ -73,13 +105,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (liff.isInClient()) {
                     liff.closeWindow();
                 }
-            }, 2000); // 2秒後自動關閉
+            }, 2000);
         } else {
             showMessage(result.message, 'error');
             submitBtn.disabled = false;
+            submitBtn.textContent = '儲存資料';
         }
     });
 
-    // 執行初始化
+    // === 事件綁定 ===
+    // 【新增】為電話輸入框綁定 'input' 事件，實現即時驗證
+    if (phoneElem) {
+        phoneElem.addEventListener('input', validatePhone);
+    }
+
+    // === 程式進入點 ===
     initializePage();
 });
