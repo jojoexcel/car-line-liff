@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用者管理</title>
+    <!-- 引入共用資源 -->
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
+    <script> loadCSS('./css/style.css'); </script>
+    <!-- 頁面獨有 CSS -->
+    <style>
+        .filter-controls, .search-controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .filter-controls button { width: auto; flex-grow: 1; background-color: #6c757d; }
+        .filter-controls button.active { background-color: var(--primary-color); font-weight: bold; }
+        .search-controls input { flex-grow: 1; }
+        .user-list-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .user-avatar { width: 50px; height: 50px; border-radius: 50%; margin-right: 15px; }
+        .user-info { flex-grow: 1; }
+        .user-info strong { display: block; }
+        .user-actions button { width: auto; padding: 5px 10px; font-size: 0.9em; margin-left: 5px; }
+        .status-badge { /* ... (可從 status.html 複製過來) ... */ }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">載入中...</div>
+    <div class="container">
+        <h1>使用者管理</h1>
+        <div id="auth-panel">正在驗證管理員權限...</div>
+
+        <!-- 管理介面 (預設隱藏) -->
+        <div id="management-panel" style="display: none;">
+            <!-- 篩選器 -->
+            <div id="filter-buttons" class="filter-controls">
+                <button data-filter="pending" class="active">待審核</button>
+                <button data-filter="approved">已通過</button>
+                <button data-filter="suspended">已停權</button>
+                <button data-filter="all">全部</button>
+            </div>
+            <!-- 搜尋框 -->
+            <div class="search-controls">
+                <input type="search" id="search-input" placeholder="依姓名或單位搜尋...">
+                <button id="search-btn">搜尋</button>
+            </div>
+            <!-- 使用者列表 -->
+            <div id="user-list"></div>
+        </div>
+    </div>
+
+    <!-- JS 載入 -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        loadJS(
+            ['./js/main.js', './js/user-management.js'],
+            function() { initializeUserManagementPage(); }
+        );
+    </script>
+</body>
+</html>
