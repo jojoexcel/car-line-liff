@@ -1,32 +1,142 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>使用指南 - 公務車系統</title>
-    <script src="./js/version.js"></script><script src="./js/loader.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用指南 - 公務車系統</title>
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
     <script>loadCSS('./css/style.css');</script>
     <style>
-        .guide-container h1{text-align:center;margin-bottom:1.5em}details{background-color:#f8f9fa;border:1px solid #dee2e6;border-radius:8px;margin-bottom:15px;transition:background-color .3s}summary{font-size:1.2em;font-weight:600;padding:15px 20px;cursor:pointer;position:relative;outline:0;list-style:none}summary::-webkit-details-marker{display:none}summary::after{content:'▼';position:absolute;right:20px;font-size:.8em;transition:transform .3s ease}details[open]>summary::after{transform:rotate(180deg)}details[open]>summary{background-color:#e9ecef;border-bottom:1px solid #dee2e6}.details-content{padding:20px;line-height:1.8;color:#333;border-top:1px solid #ddd}.details-content ol{padding-left:20px}
+        .guide-container h1 {
+            text-align: center;
+            margin-bottom: 1.5em
+        }
+
+        details {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: background-color .3s
+        }
+
+        summary {
+            font-size: 1.2em;
+            font-weight: 600;
+            padding: 15px 20px;
+            cursor: pointer;
+            position: relative;
+            outline: 0;
+            list-style: none
+        }
+
+        summary::-webkit-details-marker {
+            display: none
+        }
+
+        summary::after {
+            content: '▼';
+            position: absolute;
+            right: 20px;
+            font-size: .8em;
+            transition: transform .3s ease
+        }
+
+        details[open]>summary::after {
+            transform: rotate(180deg)
+        }
+
+        details[open]>summary {
+            background-color: #e9ecef;
+            border-bottom: 1px solid #dee2e6
+        }
+
+        .details-content {
+            padding: 20px;
+            line-height: 1.8;
+            color: #333;
+            border-top: 1px solid #ddd
+        }
+
+        .details-content ol {
+            padding-left: 20px
+        }
     </style>
 </head>
+
 <body>
     <div class="container guide-container">
         <h1>公務車借用系統 - 使用指南</h1>
         <p id="welcome-message" style="text-align: center; margin-bottom: 2em; color: #555;"></p>
-        <details><summary>1. 首次使用：建立個人資料</summary><div class="details-content"><ol><li>點擊「📝 個人資料」。</li><li>填寫您的「用戶名稱」、「電話」、「單位」及「職務」。</li><li>點擊「建立新資料」。</li><li>靜待管理員審核通過。</li></ol></div></details>
-        <details><summary>2. 預約借車</summary><div class="details-content"><ol><li>點擊「📅 預約借車」。</li><li>選擇起迄時間後，點擊「查詢可用車輛」。</li><li>選擇車輛，填寫事由與地點後，點擊「確認預約」。</li></ol></div></details>
-        <details><summary>3. 領車 / 還車</summary><div class="details-content"><ol><li>在預約時間範圍內，點擊「🔑 領車 / 還車」。</li><li>系統會自動判斷狀態，請依畫面提示操作。</li><li>填寫公里數等必要資訊後，點擊確認。</li></ol></div></details>
-        <details><summary>4. 拍照上傳</summary><div class="details-content"><ol><li>完成領/還車後，點擊「📷 拍照上傳」。</li><li>頁面會自動鎖定您最後一筆記錄。</li><li>選擇照片(最多5張)，點擊「上傳照片」。</li></ol></div></details>
+        <details>
+            <summary>1. 首次使用：建立個人資料</summary>
+            <div class="details-content">
+                <ol>
+                    <li>點擊「📝 個人資料」。</li>
+                    <li>填寫您的「用戶名稱」、「電話」、「單位」及「職務」。</li>
+                    <li>點擊「建立新資料」。</li>
+                    <li>靜待管理員審核通過。</li>
+                </ol>
+            </div>
+        </details>
+        <details>
+            <summary>2. 預約借車</summary>
+            <div class="details-content">
+                <ol>
+                    <li>點擊「📅 預約借車」。</li>
+                    <li>選擇起迄時間後，點擊「查詢可用車輛」。</li>
+                    <li>選擇車輛，填寫事由與地點後，點擊「確認預約」。</li>
+                </ol>
+            </div>
+        </details>
+        <details>
+            <summary>3. 領車 / 還車</summary>
+            <div class="details-content">
+                <ol>
+                    <li>在預約時間範圍內，點擊「🔑 領車 / 還車」。</li>
+                    <li>系統會自動判斷狀態，請依畫面提示操作。</li>
+                    <li>填寫公里數等必要資訊後，點擊確認。</li>
+                </ol>
+            </div>
+        </details>
+        <details>
+            <summary>4. 拍照上傳</summary>
+            <div class="details-content">
+                <ol>
+                    <li>完成領/還車後，點擊「📷 拍照上傳」。</li>
+                    <li>頁面會自動鎖定您最後一筆記錄。</li>
+                    <li>選擇照片(最多5張)，點擊「上傳照片」。</li>
+                </ol>
+            </div>
+        </details>
+        <details>
+            <summary>5. 其他功能與常見問題</summary>
+            <div class="details-content">
+                <h4>查詢我的預約</h4>
+                <p>點擊「🔍 查詢我的預約」，可查看您所有有效的預約。對於尚未領車的預約，您可以在此頁面進行取消。</p>
+                <h4>修改歷史記錄</h4>
+                <p>點擊「✍️ 修改歷史記錄」，可以修改過去一週內的領還車記錄，例如補填或修正公里數、加油金額、備註等。</p>
+                <hr style="margin: 20px 0;\">
+                <h4>Q: 為什麼我無法預約借車？</h4>
+                <p>A: 請先至「個人資料」頁面確認您的帳號狀態是否為「通過」。若為「待審核」或「停權」，則無法使用借車功能。</p>
+                <h4>Q: 為什麼「領車/還車」頁面顯示我沒有可操作的項目？</h4>
+                <p>A: 請確認您當前的時間是否在預約的「可操作時間範圍」內。一般可於預約開始前 2 小時領車。若預約時間在早上 8 點前，則可於前一天下午 5 點後領車。</p>
+            </div>
+        </details>
     </div>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         loadJS(['./js/main.js'], () => {
-            (async function() {
+            (async function () {
                 try {
                     const liffProfile = await initializeLiff();
-                    if(liffProfile) document.getElementById('welcome-message').textContent = `歡迎，${liffProfile.displayName}！點擊標題可展開說明。`;
-                } catch(e) { console.error(e); }
+                    if (liffProfile) document.getElementById('welcome-message').textContent = `歡迎，${liffProfile.displayName}！點擊標題可展開說明。`;
+                } catch (e) { console.error(e); }
             })();
         });
     </script>
 </body>
+
 </html>
