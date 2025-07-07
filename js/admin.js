@@ -9,7 +9,7 @@ async function initializeAdminPage() {
 
     // 1. 獲取所有需要操作的 HTML 元素
     const authPanel = document.getElementById('auth-panel');
-    const managementPanel = document.getElementById('management-panel');
+    const managementPanel = document.getElementById('admin-menu-container');
 
     // 確保關鍵的 authPanel 存在，否則後續操作無意義
     if (!authPanel) {
