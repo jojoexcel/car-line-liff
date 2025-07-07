@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理員功能</title>
-    <link rel="stylesheet" href="./css/style.css?v=1.0.1">
+    <!-- 1. 載入版本號和載入器 -->
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
+
+    <!-- 2. 動態載入 CSS -->
+    <script>
+        loadCSS('./css/style.css');
+    </script>
     <style>
         .admin-menu a {
             display: block;
-            background-color: var(--error-color); /* 管理功能用紅色系突顯 */
+            background-color: var(--error-color);
+            /* 管理功能用紅色系突顯 */
             color: white;
             padding: 15px;
             margin-bottom: 15px;
@@ -19,11 +28,13 @@
             font-weight: 500;
             transition: background-color 0.2s;
         }
+
         .admin-menu a:hover {
             background-color: #c9302c;
         }
     </style>
 </head>
+
 <body>
     <div id="loading-overlay"></div>
     <div class="container">
@@ -40,34 +51,22 @@
             <a href="index.html" style="background-color: #6c757d;">返回主選單</a>
         </div>
     </div>
-    
+
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="./js/main.js"></script>
-    <script>
-        // admin.html 專用的 JS
-        async function initializeAdminPage() {
-            const liffProfile = await initializeLiff();
-            if (!liffProfile) return;
-
-            try {
-                const result = await callGasApi('getUserProfile', { userId: liffProfile.userId });
-                const adminWelcome = document.getElementById('admin-welcome');
-                const adminMenu = document.getElementById('admin-menu-container');
-
-                if (result.status === 'found' && (result.data.status === '管理者' || result.data.status === '開發者')) {
-                    // 權限驗證通過
-                    adminWelcome.textContent = `權限已確認，${result.data.name}。請選擇要執行的操作。`;
-                    adminMenu.style.display = 'block';
-                } else {
-                    // 權限不足
-                    adminWelcome.style.color = 'var(--error-color)';
-                    adminWelcome.textContent = '權限不足！此頁面僅供管理員使用。';
-                }
-            } catch (error) {
-                document.getElementById('admin-welcome').textContent = '驗證權限時發生錯誤。';
+<script>
+        // 【關鍵修改】使用新的 loadJS 和回呼函式
+        loadJS(
+            [
+                './js/main.js',    // 先載入共用函式庫
+                './js/admin.js'  // 再載入本頁專屬的邏輯
+            ],
+            function() {
+                // 這個函式會在 main.js 和 booking.js 都載入完成後才執行
+                // 此時，initializeBookingPage 函式已經存在於全域作用域中
+                initializeBookingPage();
             }
-        }
-        initializeAdminPage();
+        );
     </script>
 </body>
+
 </html>

@@ -76,14 +76,14 @@
     </div>
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script>
+    <script>
         // 【關鍵修改】使用新的 loadJS 和回呼函式
         loadJS(
             [
                 './js/main.js',    // 先載入共用函式庫
                 './js/history.js'  // 再載入本頁專屬的邏輯
             ],
-            function() {
+            function () {
                 // 這個函式會在 main.js 和 booking.js 都載入完成後才執行
                 // 此時，initializeBookingPage 函式已經存在於全域作用域中
                 initializeBookingPage();

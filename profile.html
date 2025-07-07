@@ -4,15 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>個人資料</title>
-    <link rel="stylesheet" href="./css/style.css">
-   <style> 
+ <!-- 1. 載入版本號和載入器 -->
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
+
+    <!-- 2. 動態載入 CSS -->
+    <script>
+        loadCSS('./css/style.css');
+    </script>
+   <style>
     .validation-error {
     color: var(--error-color);
     font-size: 0.9em;
     margin-top: 5px;
     height: 1.2em; /* 給一個固定高度，避免佈局跳動 */
 }
-</style> 
+</style>
 </head>
 <body>
     <div id="loading-overlay">載入中...</div>
@@ -31,11 +38,11 @@
             </div>
                 <div class="form-group">
                 <label for="phone">電話 (格式: 09xx-xxxxxx)</label>
-                <input type="tel" id="phone" 
-                       placeholder="例如: 0912-345678" 
-                       required 
+                <input type="tel" id="phone"
+                       placeholder="例如: 0912-345678"
+                       required
                        pattern="09\d{2}-\d{6}"> <!-- 【關鍵修改】新增 pattern 屬性 -->
-                
+
                 <!-- 【新增】用於顯示即時錯誤訊息的元素 -->
                 <div id="phone-error" class="validation-error"></div>
             </div>
@@ -59,7 +66,18 @@
     </div>
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="./js/profile.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        loadJS(
+            [
+                './js/main.js',
+                './js/profile.js' // 載入 profile.js
+            ],
+            function() {
+                // 當載入完成後，呼叫 profile.js 裡的初始化函式
+                initializeProfilePage();
+            }
+        );
+    </script>
 </body>
 </html>

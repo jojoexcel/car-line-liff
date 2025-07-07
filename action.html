@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>領車 / 還車</title>
      <!-- 1. 永遠最先載入版本號和載入器 -->
-    <script src="./js/version.js"></script> 
+    <script src="./js/version.js"></script>
     <script src="./js/loader.js"></script>
     <!-- 3. 使用載入器動態載入我們自己的 CSS (自動加版本號) -->
     <script>
@@ -41,10 +41,10 @@
 <body>
     <!-- 全域載入遮罩 -->
     <div id="loading-overlay">檢查中...</div>
-    
+
     <div class="container">
         <h1>領車 / 還車</h1>
-        
+
         <!-- 步驟一：動作選擇列表 -->
         <div id="selection-panel" style="display: none;">
             <h2>請選擇您要執行的操作</h2>
@@ -97,7 +97,7 @@
             </div>
             <button type="submit">確認還車</button>
         </form>
-        
+
         <!-- 全域訊息提示框 -->
         <div id="message-box" class="message" style="display: none;"></div>
     </div>
@@ -105,10 +105,16 @@
     <!-- 必要的 JS 檔案 -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        loadJS([
-            './js/main.js',
-            './js/action.js' // 載入此頁面專屬的 JS
-        ]);
+        loadJS(
+            [
+                './js/main.js',
+                './js/action.js' // 載入 action.js
+            ],
+            function() {
+                // 當載入完成後，呼叫 action.js 裡的初始化函式
+                initializeActionPage();
+            }
+        );
     </script>
 
 </body>
