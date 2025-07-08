@@ -1,8 +1,8 @@
-// js/status.js (使用者專用取消版)
+// js/status.js (獨立取消流程 - 完整最終版)
 
 /**
  * status.html 頁面的主初始化函式。
- * 讓使用者查看自己的有效預約，並允許取消。
+ * 讓使用者查看自己的有效預約，並允許使用自訂模態視窗來取消。
  */
 async function initializeStatusPage() {
     console.log("Initializing Status Page Logic...");
@@ -11,10 +11,19 @@ async function initializeStatusPage() {
     const reservationListElem = document.getElementById('reservation-list');
     const infoPanel = document.getElementById('info-panel');
     const infoText = document.getElementById('info-text');
+
+    // 【關鍵】只獲取本頁面需要的模態視窗元素
+    const cancelModal = document.getElementById('custom-confirm-modal'); // 在 status.html 中，這個就是取消視窗
     const cancelReasonInput = document.getElementById('cancel-reason-input');
+    const confirmOkBtn = document.getElementById('confirm-ok-btn');
+    const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
 
     // === 全域變數 ===
     let liffProfile = null;
+    let reservationToCancel = {
+        rowNum: null,
+        buttonElement: null
+    };
 
     /**
      * 渲染預約列表
@@ -33,8 +42,7 @@ async function initializeStatusPage() {
             card.id = `reservation-${res.rowNum}`;
             let btnHtml = '';
             if (res.status === '預約成功') {
-                // data-user-id 在這裡雖然不是必須，但保留著也無妨
-                btnHtml = `<button class="cancel-btn" data-row-num="${res.rowNum}" data-user-id="${liffProfile.userId}">取消此預約</button>`;
+                btnHtml = `<button class="cancel-btn" data-row-num="${res.rowNum}">取消此預約</button>`;
             }
             card.innerHTML = `<h3>${res.carPlate} <span class="status-badge">${res.status}</span></h3><p><strong>時間：</strong>${res.startTime} - ${res.endTime}</p><p><strong>事由：</strong>${res.reason}</p>${btnHtml}`;
             reservationListElem.appendChild(card);
@@ -42,49 +50,63 @@ async function initializeStatusPage() {
     }
 
     /**
-     * 處理取消按鈕的點擊事件
+     * 【重寫】處理取消按鈕的點擊，只負責打開視窗
      */
-    async function handleCancelClick(e) {
+    function handleCancelClick(e) {
         if (!e.target || !e.target.classList.contains('cancel-btn')) return;
 
-        const button = e.target;
-        const rowNum = button.dataset.rowNum;
+        reservationToCancel.buttonElement = e.target;
+        reservationToCancel.rowNum = e.target.dataset.rowNum;
 
-        // 使用全域的 showModalConfirm 來獲取使用者確認和取消原因
-        const isConfirmed = await showModalConfirm('您確定要取消這筆預約嗎？', '取消預約');
+        if (cancelReasonInput) cancelReasonInput.value = '';
+        if (cancelModal) cancelModal.style.display = 'flex';
+    }
 
-        if (isConfirmed) {
-            const reason = cancelReasonInput ? cancelReasonInput.value : "";
+    /**
+     * 【新增】處理模態視窗中的「確定取消」按鈕點擊
+     */
+    async function confirmCancellation() {
+        const { rowNum, buttonElement } = reservationToCancel;
+        if (!rowNum || !buttonElement) return;
 
-            button.disabled = true;
-            button.textContent = '取消中...';
+        // 從模態視窗中獲取原因
+        const reason = cancelReasonInput ? cancelReasonInput.value : "";
 
-            // 【關鍵修改】準備發送給後端的參數，只包含必要欄位
-            const params = {
-                rowNum: rowNum,
-                reason: cancelReason,
-                operatorId: liffProfile.userId // 【修改】操作者就是使用者本人
-            };
+        closeCancelModal(); // 關閉視窗
 
-            console.log("Sending params to cancelReservation:", params); // 除錯用
+        buttonElement.disabled = true;
+        buttonElement.textContent = '取消中...';
 
-            const result = await callGasApi('cancelReservation', params);
+        const params = {
+            rowNum: rowNum,
+            reason: reason,
+            operatorId: liffProfile.userId // 操作者就是使用者本人
+        };
 
-            if (result.status === 'success') {
-                showModalAlert('預約已成功取消！');
-                const cardToRemove = document.getElementById(`reservation-${rowNum}`);
-                if (cardToRemove) {
-                    cardToRemove.style.transition = 'opacity 0.5s ease';
-                    cardToRemove.style.opacity = '0';
-                    setTimeout(() => cardToRemove.remove(), 500);
-                }
-            } else {
-                showModalAlert(`取消失敗: ${result.message}`, '錯誤');
-                button.disabled = false;
-                button.textContent = '取消此預約';
+        const result = await callGasApi('cancelReservation', params);
+
+        if (result.status === 'success') {
+            showModalAlert('預約已成功取消！'); // 使用全域的 alert
+            const cardToRemove = document.getElementById(`reservation-${rowNum}`);
+            if (cardToRemove) {
+                cardToRemove.style.transition = 'opacity 0.5s ease';
+                cardToRemove.style.opacity = '0';
+                setTimeout(() => cardToRemove.remove(), 500);
             }
+        } else {
+            showModalAlert(`取消失敗: ${result.message}`, '錯誤');
+            buttonElement.disabled = false;
+            buttonElement.textContent = '取消此預約';
         }
     }
+
+    /**
+     * 關閉模態視窗
+     */
+    function closeCancelModal() {
+        if (cancelModal) cancelModal.style.display = 'none';
+    }
+
 
     // === 初始化總流程 ===
     try {
@@ -98,9 +120,11 @@ async function initializeStatusPage() {
             showModalAlert(result.message || '無法載入預約清單。', '錯誤');
         }
 
-        if (reservationListElem) {
-            reservationListElem.addEventListener('click', handleCancelClick);
-        }
+        // 綁定所有事件
+        if (reservationListElem) reservationListElem.addEventListener('click', handleCancelClick);
+        if (confirmOkBtn) confirmOkBtn.addEventListener('click', confirmCancellation);
+        if (confirmCancelBtn) confirmCancelBtn.addEventListener('click', closeCancelModal);
+
     } catch (e) {
         console.error("Status page init failed", e);
         showModalAlert("頁面初始化失敗", "錯誤");
