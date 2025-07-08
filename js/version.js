@@ -1,7 +1,7 @@
 // js/version.js
 // 這是我們唯一的、全域的版本號控制中心。
 // 每次有重大更新時，只需要修改這個檔案裡的數字即可。
-const GLOBAL_CACHE_VERSION = '1.3.7'
+const GLOBAL_CACHE_VERSION = '1.3.8'
 /**
  * 產生帶有版本號的 URL
  * @param {string} path - 相對路徑, e.g., 'profile.html' or './css/style.css'
