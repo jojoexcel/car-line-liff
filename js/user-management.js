@@ -1,7 +1,7 @@
 /**
  * 檔案說明：管理者專用的「使用者管理」頁面 (user-management.html) 的主要邏輯。
  * 核心功能：篩選、搜尋、審核、停權/復權、以及編輯使用者資料。
- * 版本：3.0 (編輯功能與自訂對話框整合版)
+ * 版本：3.1 (修正遺漏的對話框函式)
  */
 async function initializeUserManagementPage() {
     console.log("Initializing User Management Page Logic...");
@@ -36,13 +36,14 @@ async function initializeUserManagementPage() {
     const editTitleInput = document.getElementById('edit-title');
 
     // === 全域狀態變數 ===
-    let currentFilter = 'pending'; // 預設篩選條件
-    let resolveConfirm; // 用於儲存 Promise 的 resolve 函式
-    let recentUsers = []; // 用於快取從後端獲取的使用者列表
+    let currentFilter = 'pending';
+    let resolveConfirm;
+    let recentUsers = [];
+    let liffProfile = null; // 【新增】將 liffProfile 提升為函式級別變數
 
     // === 權限驗證 ===
     try {
-        const liffProfile = await initializeLiff();
+        liffProfile = await initializeLiff(); // 初始化並賦值
         if (!liffProfile) {
             authPanel.textContent = 'LIFF 初始化失敗或未登入。';
             return;
@@ -60,18 +61,26 @@ async function initializeUserManagementPage() {
         return;
     }
 
-    // === 輔助函式 ===
+    // === 【關鍵修正】補上遺漏的輔助函式定義 ===
+
+    function customAlert(message) {
+        if (!alertModal || !alertText) return;
+        alertText.textContent = message;
+        alertModal.style.display = 'flex';
+    }
+
+    function customConfirm(message) {
+        return new Promise((resolve) => {
+            resolveConfirm = resolve;
+            if (confirmText) confirmText.textContent = message;
+            if (confirmModal) confirmModal.style.display = 'flex';
+        });
+    }
 
     function generateActionButtons(status) {
-        if (status === '待審核') {
-            return `<button class="approve-btn">✅ 通過</button><button class="reject-btn">❌ 拒絕</button>`;
-        }
-        if (status === '通過' || status === '管理者' || status === '開發者') {
-            return `<button class="edit-btn">✏️ 編輯</button><button class="suspend-btn">🚫 停權</button>`;
-        }
-        if (status === '停權') {
-            return `<button class="edit-btn">✏️ 編輯</button><button class="approve-btn">✅ 復權</button>`;
-        }
+        if (status === '待審核') return `<button class="approve-btn">✅ 通過</button><button class="reject-btn">❌ 拒絕</button>`;
+        if (status === '通過' || status === '管理者' || status === '開發者') return `<button class="edit-btn">✏️ 編輯</button><button class="suspend-btn">🚫 停權</button>`;
+        if (status === '停權') return `<button class="edit-btn">✏️ 編輯</button><button class="approve-btn">✅ 復權</button>`;
         return '';
     }
 
@@ -90,13 +99,10 @@ async function initializeUserManagementPage() {
                 <img src="${avatarUrl}" alt="avatar" class="user-avatar" onerror="this.onerror=null;this.src='./images/default-avatar.png';">
                 <div class="user-info">
                     <strong>${user.name || 'N/A'}</strong>
-                    <span>${user.unit || 'N/A'} / ${user.title || 'N/A'}</span>
-                    <br>
+                    <span>${user.unit || 'N/A'} / ${user.title || 'N/A'}</span><br>
                     <small style="color: #888;">狀態: ${user.status}</small>
                 </div>
-                <div class="user-actions" data-user-id="${user.userId}">
-                    ${generateActionButtons(user.status)}
-                </div>
+                <div class="user-actions" data-user-id="${user.userId}">${generateActionButtons(user.status)}</div>
             `;
             userListElem.appendChild(item);
         });
@@ -105,19 +111,16 @@ async function initializeUserManagementPage() {
     async function loadUsers(filter, searchTerm = '') {
         const result = await callGasApi('getUsersByFilter', { filter, searchTerm });
         if (result.status === 'success') {
-            recentUsers = result.data; // 快取使用者列表
+            recentUsers = result.data;
             renderUserList(recentUsers);
         } else {
-           displayModalAlert('載入使用者失敗: ' + result.message);
+           customAlert('載入使用者失敗: ' + result.message);
         }
     }
 
     function openEditModal(userId) {
         const userToEdit = recentUsers.find(u => u.userId === userId);
-        if (!userToEdit) {
-           displayModalAlert("找不到該使用者的詳細資料。");
-            return;
-        }
+        if (!userToEdit) { customAlert("找不到該使用者的詳細資料。"); return; }
         editUserIdInput.value = userToEdit.userId;
         editNameInput.value = userToEdit.name;
         editPhoneInput.value = userToEdit.phone;
@@ -134,68 +137,44 @@ async function initializeUserManagementPage() {
         e.preventDefault();
         const phoneRegex = /^09\d{2}-\d{6}$/;
         if (!phoneRegex.test(editPhoneInput.value)) {
-           displayModalAlert("電話格式不正確，應為 09xx-xxxxxx。");
+           customAlert("電話格式不正確，應為 09xx-xxxxxx。");
             return;
         }
-        const params = {
-            targetUserId: editUserIdInput.value,
-            name: editNameInput.value,
-            phone: editPhoneInput.value,
-            unit: editUnitInput.value,
-            title: editTitleInput.value,
-        };
+        const params = { targetUserId: editUserIdInput.value, name: editNameInput.value, phone: editPhoneInput.value, unit: editUnitInput.value, title: editTitleInput.value };
         const result = await callGasApi('updateUserByAdmin', params);
         if (result.status === 'success') {
-           displayModalAlert('使用者資料已成功更新！');
+           customAlert('使用者資料已成功更新！');
             closeEditModal();
             loadUsers(currentFilter, searchInput.value);
         } else {
-           displayModalAlert('更新失敗: ' + result.message);
+           customAlert('更新失敗: ' + result.message);
         }
     }
 
     // === 事件綁定 ===
-
-    // 1. 使用者列表的操作按鈕
     if (userListElem) {
         userListElem.addEventListener('click', async (e) => {
             const target = e.target;
             const actionContainer = target.closest('.user-actions');
             if (!actionContainer) return;
-
             const targetUserId = actionContainer.dataset.userId;
-
-            if (target.classList.contains('edit-btn')) {
-                openEditModal(targetUserId);
-                return;
-            }
-
-            let newStatus = '';
-            let confirmMessage = '';
-            if (target.classList.contains('approve-btn')) {
-                newStatus = '通過';
-                confirmMessage = '確定要通過此使用者的申請嗎？';
-            } else if (target.classList.contains('reject-btn') || target.classList.contains('suspend-btn')) {
-                newStatus = '停權';
-                confirmMessage = '確定要拒絕/停權此使用者嗎？';
-            } else {
-                return;
-            }
-
+            if (target.classList.contains('edit-btn')) { openEditModal(targetUserId); return; }
+            let newStatus = '', confirmMessage = '';
+            if (target.classList.contains('approve-btn')) { newStatus = '通過'; confirmMessage = '確定要通過此使用者的申請嗎？';
+            } else if (target.classList.contains('reject-btn') || target.classList.contains('suspend-btn')) { newStatus = '停權'; confirmMessage = '確定要拒絕/停權此使用者嗎？';
+            } else { return; }
             const isConfirmed = await customConfirm(confirmMessage);
             if (isConfirmed) {
                 const result = await callGasApi('updateUserByAdmin', { targetUserId, newStatus });
                 if (result.status === 'success') {
-                   displayModalAlert('狀態更新成功！');
+                   customAlert('狀態更新成功！');
                     loadUsers(currentFilter, searchInput.value);
                 } else {
-                   displayModalAlert('更新失敗: ' + result.message);
+                   customAlert('更新失敗: ' + result.message);
                 }
             }
         });
     }
-
-    // 2. 篩選器按鈕
     if (filterButtons) {
         filterButtons.addEventListener('click', (e) => {
             if (e.target.tagName === 'BUTTON') {
@@ -207,27 +186,11 @@ async function initializeUserManagementPage() {
             }
         });
     }
-
-    // 3. 搜尋功能
     if (searchBtn) searchBtn.addEventListener('click', () => loadUsers(currentFilter, searchInput.value));
-    if (searchInput) searchInput.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') loadUsers(currentFilter, searchInput.value);
-    });
-
-    // 4. 對話框按鈕
-    if (confirmOkBtn) confirmOkBtn.addEventListener('click', () => {
-        if (confirmModal) confirmModal.style.display = 'none';
-        if (resolveConfirm) resolveConfirm(true);
-    });
-    if (confirmCancelBtn) confirmCancelBtn.addEventListener('click', () => {
-        if (confirmModal) confirmModal.style.display = 'none';
-        if (resolveConfirm) resolveConfirm(false);
-    });
-    if (alertOkBtn) alertOkBtn.addEventListener('click', () => {
-        if (alertModal) alertModal.style.display = 'none';
-    });
-
-    // 5. 編輯表單按鈕
+    if (searchInput) searchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') loadUsers(currentFilter, searchInput.value); });
+    if (confirmOkBtn) confirmOkBtn.addEventListener('click', () => { if (confirmModal) confirmModal.style.display = 'none'; if (resolveConfirm) resolveConfirm(true); });
+    if (confirmCancelBtn) confirmCancelBtn.addEventListener('click', () => { if (confirmModal) confirmModal.style.display = 'none'; if (resolveConfirm) resolveConfirm(false); });
+    if (alertOkBtn) alertOkBtn.addEventListener('click', () => { if (alertModal) alertModal.style.display = 'none'; });
     if (editForm) editForm.addEventListener('submit', handleEditFormSubmit);
     if (editCancelBtn) editCancelBtn.addEventListener('click', closeEditModal);
 
