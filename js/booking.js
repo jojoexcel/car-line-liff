@@ -31,7 +31,8 @@ async function initializeBookingPage() {
             time_24hr: true,
             locale: "zh_tw",
             minuteIncrement: 30,
-            minDate: "today"
+            minDate: "today",
+            disableMobile: "true"
         };
         flatpickr(startTimeElem, {
             ...commonOptions,
