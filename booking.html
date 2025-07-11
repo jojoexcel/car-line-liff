@@ -1,37 +1,103 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>預約借車</title>
-    <script src="./js/version.js"></script><script src="./js/loader.js"></script>
-    <script>loadCSS('./css/style.css');</script>
-    <style>.step{display:none}.step.active{display:block}.datetime-preview{font-size:.9em;color:#6c757d;padding-left:5px;margin-top:5px;height:1.2em}.car-list-item{display:flex;align-items:center;padding:10px;border:1px solid var(--border-color);border-radius:5px;margin-bottom:10px;cursor:pointer}.car-list-item input[type=radio]{margin-right:15px;width:20px;height:20px}</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>預約借車 - 公務車系統</title>
+
+    <!-- 1. 載入版本號和載入器 -->
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
+
+    <!-- 2. 引入外部函式庫的 CSS (靜態連結，不受我們版本號控制) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+
+    <!-- 3. 使用載入器動態載入我們自己的 CSS (會自動加上版本號) -->
+    <script>
+        loadCSS('./css/style.css');
+    </script>
+
+    <!-- 4. 頁面獨有的 CSS -->
+    <style>
+        .step { display: none; }
+        .step.active { display: block; }
+
+        /* 讓 flatpickr 的輸入框看起來跟其他輸入框一樣 */
+        input.flatpickr-input {
+            background-color: #fff !important; /* 覆蓋 flatpickr 的預設樣式 */
+            cursor: pointer;
+        }
+
+        .car-list-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .car-list-item input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div id="loading-overlay"></div>
+    <div id="loading-overlay">載入中...</div>
     <div class="container">
         <h1>預約借車</h1>
+
+        <!-- 步驟一：選擇時間 -->
         <div id="step1" class="step active">
             <h2>步驟 1: 選擇借用時間</h2>
             <form id="time-form">
-                <div class="form-group"><label for="start-time">開始時間</label><input type="datetime-local" id="start-time" required><div id="start-time-preview" class="datetime-preview"></div></div>
-                <div class="form-group"><label for="end-time">結束時間</label><input type="datetime-local" id="end-time" required><div id="end-time-preview" class="datetime-preview"></div></div>
+                <div class="form-group">
+                    <label for="start-time">開始時間</label>
+                    <input type="text" id="start-time" placeholder="點擊選擇時間..." readonly="readonly" required>
+                </div>
+                <div class="form-group">
+                    <label for="end-time">結束時間</label>
+                    <input type="text" id="end-time" placeholder="點擊選擇時間..." readonly="readonly" required>
+                </div>
                 <button type="submit">查詢可用車輛</button>
             </form>
         </div>
+
+        <!-- 步驟二：選擇車輛與填寫資訊 -->
         <div id="step2" class="step">
             <h2>步驟 2: 選擇車輛並填寫資訊</h2>
             <form id="details-form">
-                <div class="form-group"><label>可用車輛</label><div id="car-list"></div></div>
-                <div class="form-group"><label for="reason">申請事由</label><input type="text" id="reason" required></div>
-                <div class="form-group"><label for="location">起訖地點</label><input type="text" id="location" placeholder="例如: 台北-台中" required></div>
+                <div class="form-group">
+                    <label>可用車輛</label>
+                    <div id="car-list"></div>
+                </div>
+                <div class="form-group">
+                    <label for="reason">申請事由</label>
+                    <input type="text" id="reason" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">起訖地點</label>
+                    <input type="text" id="location" placeholder="例如: 台北-台中" required>
+                </div>
                 <button type="submit">確認預約</button>
             </form>
         </div>
     </div>
+
+    <!-- 標準化模態視窗 -->
     <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title">系統訊息</h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
+
+    <!-- 5. 引入所有 JavaScript -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/zh-tw.js"></script>
     <script>
-        loadJS(['./js/main.js', './js/booking.js'], () => { initializeBookingPage(); });
+        loadJS(
+            ['./js/main.js', './js/booking.js'],
+            () => { initializeBookingPage(); }
+        );
     </script>
 </body>
 </html>
