@@ -1,7 +1,7 @@
 /**
  * 檔案說明：管理者專用的「使用者管理」頁面 (user-management.html) 的主要邏輯。
- * 核心功能：篩選、搜尋、審核、停權/復權、以及編輯使用者資料。
- * 版本：3.1 (修正遺漏的對話框函式)
+ * 核心功能：篩選、搜尋、審核、編輯，以及基於操作者權限的管理員升降級。
+ * 版本：4.0 (權限判斷 UI 版)
  */
 async function initializeUserManagementPage() {
     console.log("Initializing User Management Page Logic...");
@@ -37,36 +37,38 @@ async function initializeUserManagementPage() {
 
     // === 全域狀態變數 ===
     let currentFilter = 'pending';
-    let resolveConfirm;
+    let liffProfile = null;
+    let adminSystemProfile = null; // 儲存登入管理員的完整 Profile
     let recentUsers = [];
-    let liffProfile = null; // 【新增】將 liffProfile 提升為函式級別變數
+    let resolveConfirm;
 
     // === 權限驗證 ===
     try {
-        liffProfile = await initializeLiff(); // 初始化並賦值
+        liffProfile = await initializeLiff();
         if (!liffProfile) {
             authPanel.textContent = 'LIFF 初始化失敗或未登入。';
             return;
         }
-        const adminProfile = await callGasApi('getUserProfile', { userId: liffProfile.userId });
-        if (adminProfile.status !== 'found' || (adminProfile.data.status !== '管理者' && adminProfile.data.status !== '開發者')) {
+        const result = await callGasApi('getUserProfile', { userId: liffProfile.userId });
+        if (result.status === 'found' && (result.data.status === '管理者' || result.data.status === '開發者')) {
+            adminSystemProfile = result.data; // 儲存管理員資料
+            authPanel.style.display = 'none';
+            managementPanel.style.display = 'block';
+        } else {
             authPanel.textContent = '權限不足！此頁面僅供管理員使用。';
             return;
         }
-        authPanel.style.display = 'none';
-        managementPanel.style.display = 'block';
     } catch (error) {
         authPanel.textContent = '權限驗證過程中發生錯誤。';
         console.error("Auth check failed:", error);
         return;
     }
 
-    // === 【關鍵修正】補上遺漏的輔助函式定義 ===
+    // === 輔助函式 ===
 
     function customAlert(message) {
-        if (!alertModal || !alertText) return;
-        alertText.textContent = message;
-        alertModal.style.display = 'flex';
+        if (alertText) alertText.textContent = message;
+        if (alertModal) alertModal.style.display = 'flex';
     }
 
     function customConfirm(message) {
@@ -77,11 +79,39 @@ async function initializeUserManagementPage() {
         });
     }
 
-    function generateActionButtons(status) {
-        if (status === '待審核') return `<button class="approve-btn">✅ 通過</button><button class="reject-btn">❌ 拒絕</button>`;
-        if (status === '通過' || status === '管理者' || status === '開發者') return `<button class="edit-btn">✏️ 編輯</button><button class="suspend-btn">🚫 停權</button>`;
-        if (status === '停權') return `<button class="edit-btn">✏️ 編輯</button><button class="approve-btn">✅ 復權</button>`;
-        return '';
+    /**
+     * 根據使用者狀態 和 操作者身份，產生對應的操作按鈕
+     * @param {object} user - 被操作的使用者物件
+     * @returns {string} HTML 按鈕字串
+     */
+    function generateActionButtons(user) {
+        const status = user.status;
+        const isDeveloperSelf = (adminSystemProfile.status === '開發者');
+
+        // 不能對自己或開發者進行狀態操作
+        if (user.userId === adminSystemProfile.userId) return '<span style="color: #888;">(這是您自己)</span>';
+        if (status === '開發者') return '<span style="color: #888;">(系統保留帳號)</span>';
+
+        let buttons = '';
+
+        if (status === '待審核') {
+            buttons = `<button class="approve-btn">✅ 通過</button><button class="reject-btn">❌ 拒絕</button>`;
+        } else if (status === '通過') {
+            buttons = `<button class="edit-btn">✏️ 編輯</button><button class="suspend-btn">🚫 停權</button>`;
+            if (isDeveloperSelf) {
+                buttons += `<button class="promote-btn">⬆️ 提升為管理者</button>`;
+            }
+        } else if (status === '管理者') {
+            buttons = `<button class="edit-btn">✏️ 編輯</button>`;
+            if (isDeveloperSelf) {
+                buttons += `<button class="demote-btn">⬇️ 降級為使用者</button>`;
+                buttons += `<button class="suspend-btn">🚫 停權</button>`;
+            }
+        } else if (status === '停權') {
+            buttons = `<button class="edit-btn">✏️ 編輯</button><button class="approve-btn">✅ 復權</button>`;
+        }
+        
+        return buttons;
     }
 
     function renderUserList(users) {
@@ -102,7 +132,7 @@ async function initializeUserManagementPage() {
                     <span>${user.unit || 'N/A'} / ${user.title || 'N/A'}</span><br>
                     <small style="color: #888;">狀態: ${user.status}</small>
                 </div>
-                <div class="user-actions" data-user-id="${user.userId}">${generateActionButtons(user.status)}</div>
+                <div class="user-actions" data-user-id="${user.userId}">${generateActionButtons(user)}</div>
             `;
             userListElem.appendChild(item);
         });
@@ -140,7 +170,14 @@ async function initializeUserManagementPage() {
            customAlert("電話格式不正確，應為 09xx-xxxxxx。");
             return;
         }
-        const params = { targetUserId: editUserIdInput.value, name: editNameInput.value, phone: editPhoneInput.value, unit: editUnitInput.value, title: editTitleInput.value };
+        const params = { 
+            operatorId: liffProfile.userId, // 加上操作者 ID
+            targetUserId: editUserIdInput.value, 
+            name: editNameInput.value, 
+            phone: editPhoneInput.value, 
+            unit: editUnitInput.value, 
+            title: editTitleInput.value 
+        };
         const result = await callGasApi('updateUserByAdmin', params);
         if (result.status === 'success') {
            customAlert('使用者資料已成功更新！');
@@ -152,20 +189,34 @@ async function initializeUserManagementPage() {
     }
 
     // === 事件綁定 ===
+
     if (userListElem) {
         userListElem.addEventListener('click', async (e) => {
             const target = e.target;
             const actionContainer = target.closest('.user-actions');
             if (!actionContainer) return;
             const targetUserId = actionContainer.dataset.userId;
-            if (target.classList.contains('edit-btn')) { openEditModal(targetUserId); return; }
+
+            if (target.classList.contains('edit-btn')) {
+                openEditModal(targetUserId);
+                return;
+            }
+
             let newStatus = '', confirmMessage = '';
-            if (target.classList.contains('approve-btn')) { newStatus = '通過'; confirmMessage = '確定要通過此使用者的申請嗎？';
+            if (target.classList.contains('approve-btn')) { newStatus = '通過'; confirmMessage = '確定要通過/復權此使用者嗎？';
             } else if (target.classList.contains('reject-btn') || target.classList.contains('suspend-btn')) { newStatus = '停權'; confirmMessage = '確定要拒絕/停權此使用者嗎？';
+            } else if (target.classList.contains('promote-btn')) { newStatus = '管理者'; confirmMessage = '確定要將此使用者提升為「管理者」嗎？\n此操作只有開發者能執行。';
+            } else if (target.classList.contains('demote-btn')) { newStatus = '通過'; confirmMessage = '確定要將此管理者降級為「一般使用者」嗎？\n此操作只有開發者能執行。';
             } else { return; }
+
             const isConfirmed = await customConfirm(confirmMessage);
             if (isConfirmed) {
-                const result = await callGasApi('updateUserByAdmin', { targetUserId, newStatus });
+                const params = { 
+                    operatorId: liffProfile.userId, 
+                    targetUserId: targetUserId, 
+                    newStatus: newStatus 
+                };
+                const result = await callGasApi('updateUserByAdmin', params);
                 if (result.status === 'success') {
                    customAlert('狀態更新成功！');
                     loadUsers(currentFilter, searchInput.value);
@@ -175,6 +226,7 @@ async function initializeUserManagementPage() {
             }
         });
     }
+
     if (filterButtons) {
         filterButtons.addEventListener('click', (e) => {
             if (e.target.tagName === 'BUTTON') {
@@ -186,11 +238,14 @@ async function initializeUserManagementPage() {
             }
         });
     }
+    
     if (searchBtn) searchBtn.addEventListener('click', () => loadUsers(currentFilter, searchInput.value));
     if (searchInput) searchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') loadUsers(currentFilter, searchInput.value); });
+    
     if (confirmOkBtn) confirmOkBtn.addEventListener('click', () => { if (confirmModal) confirmModal.style.display = 'none'; if (resolveConfirm) resolveConfirm(true); });
     if (confirmCancelBtn) confirmCancelBtn.addEventListener('click', () => { if (confirmModal) confirmModal.style.display = 'none'; if (resolveConfirm) resolveConfirm(false); });
     if (alertOkBtn) alertOkBtn.addEventListener('click', () => { if (alertModal) alertModal.style.display = 'none'; });
+
     if (editForm) editForm.addEventListener('submit', handleEditFormSubmit);
     if (editCancelBtn) editCancelBtn.addEventListener('click', closeEditModal);
 
