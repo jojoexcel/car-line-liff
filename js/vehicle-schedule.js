@@ -2,11 +2,15 @@
 async function initializeVehicleSchedulePage() {
     // --- 權限驗證 ---
     const liffProfile = await initializeLiff();
-    if (!liffProfile) return;
-    const adminProfile = await callGasApi('getUserProfile', { userId: liffProfile.userId });
-    if (adminProfile.status !== 'found' || (adminProfile.data.status !== '管理者' && adminProfile.data.status !== '開發者')) {
-        document.getElementById('auth-panel').textContent = '權限不足！'; return;
+    if (!liffProfile) {
+        // 如果 LIFF 初始化失敗，還是要處理一下
+        document.getElementById('auth-panel').textContent = 'LIFF 初始化失敗或未登入。';
+        return;
     }
+    // const adminProfile = await callGasApi('getUserProfile', { userId: liffProfile.userId });
+    // if (adminProfile.status !== 'found' || (adminProfile.data.status !== '管理者' && adminProfile.data.status !== '開發者')) {
+    //     document.getElementById('auth-panel').textContent = '權限不足！'; return;
+    // }
     document.getElementById('auth-panel').style.display = 'none';
     document.getElementById('management-panel').style.display = 'block';
 
