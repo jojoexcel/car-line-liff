@@ -12,12 +12,17 @@
         .timeline-item::before { content: ''; position: absolute; left: -29px; top: 5px; width: 15px; height: 15px; background-color: white; border: 3px solid var(--primary-color); border-radius: 50%; }
         .timeline-card { background: #f8f9fa; border-radius: 8px; padding: 15px; }
         .timeline-card h4 { margin: 0 0 10px; }
+        .controls .form-group label {
+    font-size: 1.2em; /* 放大字體，1em 是原始大小，1.1em 約放大 10%-20% */
+    font-weight: 500; /* 稍微加粗一點 */
+    margin-bottom: 8px; /* 增加與輸入框的間距 */
+}
     </style>
 </head>
 <body>
     <div id="loading-overlay"></div>
     <div class="container">
-        <h1>車輛排程查詢</h1>
+        <h1>車輛查詢</h1>
         <div id="auth-panel">正在驗證管理員權限...</div>
         <div id="management-panel" style="display: none;">
             <div class="controls">
