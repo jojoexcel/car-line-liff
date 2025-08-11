@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>車輛排程查詢 - 公務車系統</title>
+    <script src="./js/version.js"></script><script src="./js/loader.js"></script>
+    <script>loadCSS('./css/style.css');</script>
+    <style>
+        .controls { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; align-items: flex-end; }
+        .controls .form-group { flex: 1; min-width: 150px; margin-bottom: 0; }
+        .timeline { border-left: 3px solid #dee2e6; padding-left: 20px; }
+        .timeline-item { position: relative; margin-bottom: 20px; }
+        .timeline-item::before { content: ''; position: absolute; left: -29px; top: 5px; width: 15px; height: 15px; background-color: white; border: 3px solid var(--primary-color); border-radius: 50%; }
+        .timeline-card { background: #f8f9fa; border-radius: 8px; padding: 15px; }
+        .timeline-card h4 { margin: 0 0 10px; }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay"></div>
+    <div class="container">
+        <h1>車輛排程查詢</h1>
+        <div id="auth-panel">正在驗證管理員權限...</div>
+        <div id="management-panel" style="display: none;">
+            <div class="controls">
+                <div class="form-group">
+                    <label for="start-date">開始日期</label>
+                    <input type="date" id="start-date">
+                </div>
+                <div class="form-group">
+                    <label for="end-date">結束日期</label>
+                    <input type="date" id="end-date">
+                </div>
+                <div class="form-group">
+                    <label for="vehicle-select">選擇車輛</label>
+                    <select id="vehicle-select"><option value="all">所有車輛</option></select>
+                </div>
+                <button id="query-btn">查詢</button>
+            </div>
+            <div id="schedule-timeline" class="timeline">
+                <!-- JS 會在這裡動態產生時間軸 -->
+            </div>
+        </div>
+    </div>
+    <div id="custom-alert-modal" class="modal-overlay"> ... </div>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        loadJS(
+            ['./js/main.js', './js/vehicle-schedule.js'],
+            () => { initializeVehicleSchedulePage(); }
+        );
+    </script>
+</body>
+</html>
