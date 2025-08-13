@@ -95,20 +95,20 @@ async function initializeUserManagementPage() {
         let buttons = '';
 
         if (status === '待審核') {
-            buttons = `<button class="approve-btn">✅ 通過</button><button class="reject-btn">❌ 拒絕</button>`;
+            buttons = `<button class="approve-btn">✅<br>通過</button><button class="reject-btn">❌<br>拒絕</button>`;
         } else if (status === '通過') {
-            buttons = `<button class="edit-btn">✏️ 編輯</button><button class="suspend-btn">🚫 停權</button>`;
+            buttons = `<button class="edit-btn">✏️<br>編輯</button><button class="suspend-btn">🚫<br>停權</button>`;
             if (isDeveloperSelf) {
-                buttons += `<button class="promote-btn">⬆️ 提升為管理者</button>`;
+                buttons += `<button class="promote-btn">⬆️<br>提升為管理者</button>`;
             }
         } else if (status === '管理者') {
-            buttons = `<button class="edit-btn">✏️ 編輯</button>`;
+            buttons = `<button class="edit-btn">✏️<br>編輯</button>`;
             if (isDeveloperSelf) {
-                buttons += `<button class="demote-btn">⬇️ 降級為使用者</button>`;
-                buttons += `<button class="suspend-btn">🚫 停權</button>`;
+                buttons += `<button class="demote-btn">⬇️<br>降級為使用者</button>`;
+                buttons += `<button class="suspend-btn">🚫<br>停權</button>`;
             }
         } else if (status === '停權') {
-            buttons = `<button class="edit-btn">✏️ 編輯</button><button class="approve-btn">✅ 復權</button>`;
+            buttons = `<button class="edit-btn">✏️<br>編輯</button><button class="approve-btn">✅<br>復權</button>`;
         }
         
         return buttons;
