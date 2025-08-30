@@ -1,6 +1,7 @@
 // js/main.js
 const LIFF_ID = '2007626718-yQALkZm8';
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxnTa13Y2fOUXVlslYU8BQD-lfkW6XJ9WqsjDO5AhKM7leXVRrpvRXk90v5yAKrSmS4/exec';
+// const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxnTa13Y2fOUXVlslYU8BQD-lfkW6XJ9WqsjDO5AhKM7leXVRrpvRXk90v5yAKrSmS4/exec';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxNbKwosiQzCO6HbrNWr6ryFBRDS5gasAz-z93FJW77HQPu0SIRWI2pXu-je3dyetpe/exec';
 
 function showLoading() {
     const loading = document.getElementById('loading-overlay');
