@@ -2,7 +2,7 @@
 const LIFF_ID = '2007626718-yQALkZm8';
 // const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxnTa13Y2fOUXVlslYU8BQD-lfkW6XJ9WqsjDO5AhKM7leXVRrpvRXk90v5yAKrSmS4/exec';
 
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwP8pTidweijb7GqbfCS8B02gGak8sPnTvuhL1-RWTw5WXW4z32gieoU5KVKdDtcj2g/exec';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbyGAsunlEF3TYInPFox9nkTHn8aqcPQXIXx49Q6nVy5_-eQHHX34FIVv6gqFcVR9A23/exec';
 
 function showLoading() {
     const loading = document.getElementById('loading-overlay');
