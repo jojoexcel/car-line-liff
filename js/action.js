@@ -72,7 +72,17 @@ async function initializeActionPage() {
             if (returnForm) returnForm.style.display = 'block';
         }
     }
-
+    /**
+     * 【新增】一個只格式化日期的輔助函式
+     */
+    function formatDateOnly(isoString) {
+        if (!isoString) return '';
+        // toLocaleDateString 是一個很方便的方法
+        return new Date(isoString).toLocaleDateString('zh-TW', {
+            month: '2-digit',
+            day: '2-digit'
+        }); // 會產生 "07/28" 這樣的格式
+    }
     /**
      * 渲染從後端傳回來的動作列表
      * @param {Array<object>} actions - 包含所有可執行動作的陣列
@@ -85,8 +95,15 @@ async function initializeActionPage() {
         actions.forEach((action, index) => {
             const button = document.createElement('button');
             const actionText = action.mode === 'pickup' ? '領車' : '還車';
+            const dateText = formatDateOnly(action.reservation.startTime);
             button.className = action.mode;
-            button.innerHTML = `<strong>${actionText}</strong>：${action.reservation.carPlate}`;
+            button.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span><strong>${actionText}</strong>：${action.reservation.carPlate}</span>
+                    <small style="color: #555;">${dateText}</small>
+                </div>
+            `;
+          
             button.dataset.actionIndex = index;
 
             button.addEventListener('click', () => {
