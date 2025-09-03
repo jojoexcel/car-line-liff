@@ -33,21 +33,42 @@ async function initializeActionPage() {
 
     // === 輔助函式 ===
     
+   /**
+     * 【新增】一個格式化日期的輔助函式
+     */
+    function formatDateTime(isoString) {
+        if (!isoString) return 'N/A';
+        return new Date(isoString).toLocaleString('zh-TW', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+    }
+
     /**
-     * 根據使用者選擇的動作，顯示對應的表單
+     * 【修改】根據使用者選擇的動作，顯示對應的表單並填入時間
      * @param {object} action - 使用者選擇的那個動作物件
      */
     function showActionForm(action) {
-        currentAction = action; // 記錄當前操作的對象
+        currentAction = action;
         if (selectionPanel) selectionPanel.style.display = 'none';
 
+        const startTime = formatDateTime(action.reservation.startTime);
+        const endTime = formatDateTime(action.reservation.endTime);
+        const timeText = `${startTime} ~ ${endTime}`;
+
         if (action.mode === 'pickup') {
-            const carPlateElem = document.getElementById('pickup-car-plate');
-            if (carPlateElem) carPlateElem.value = action.reservation.carPlate;
+            document.getElementById('pickup-car-plate').value = action.reservation.carPlate;
+            // 【新增】將時間填入對應的 p 標籤
+            document.getElementById('pickup-time-display').textContent = timeText;
             if (pickupForm) pickupForm.style.display = 'block';
         } else if (action.mode === 'return') {
-            const carPlateElem = document.getElementById('return-car-plate');
-            if (carPlateElem) carPlateElem.value = action.reservation.carPlate;
+            document.getElementById('return-car-plate').value = action.reservation.carPlate;
+            // 【新增】將時間填入對應的 p 標籤
+            document.getElementById('return-time-display').textContent = timeText;
             if (returnForm) returnForm.style.display = 'block';
         }
     }
