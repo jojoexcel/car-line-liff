@@ -1,30 +1,143 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>修改歷史記錄 - 公務車系統</title>
-    <script src="./js/version.js"></script><script src="./js/loader.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改歷史記錄 - 公務車系統</title>
+    
+    <script src="./js/version.js"></script>
+    <script src="./js/loader.js"></script>
     <script>loadCSS('./css/style.css');</script>
+    
     <style>
-        .record-list-item{white-space: pre-wrap;padding:15px;border:1px solid #ddd;border-radius:5px;margin-bottom:10px;cursor:pointer;transition:background-color .2s}.record-list-item:hover{background-color:#f8f9fa}.record-list-item.selected{background-color:#e0f2f1;border-color:var(--primary-color)}#edit-form{margin-top:20px;padding-top:20px;border-top:2px solid #eee}
+        /* 列表容器 */
+        .record-list-item {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: pre-wrap; 
+            line-height: 1.5;
+        }
+        .record-list-item:hover { background-color: #f8f9fa; }
+        .record-list-item.selected { background-color: #e0f2f1; border-color: var(--primary-color); }
+        
+        /* 編輯表單 */
+        #edit-form { margin-top: 20px; padding-top: 20px; border-top: 2px solid #eee; }
+
+        /* 分頁控制項 */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .pagination-container button {
+            width: 45px;
+            height: 45px;
+            font-size: 1.2em;
+            padding: 0;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .pagination-container button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .pagination-container span {
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        /* 展開列表按鈕 */
+        #toggle-list-btn {
+            background-color: #6c757d;
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
     </style>
 </head>
 <body>
-    <div id="loading-overlay"></div>
+    <div id="loading-overlay">載入中...</div>
     <div class="container">
-        <h1>修改歷史記錄</h1><p>請選擇一筆過去 7 天內的記錄進行修改。</p>
-        <div id="record-list"></div>
+        <h1>修改歷史記錄</h1>
+        <p>請選擇一筆記錄進行修改 (依系統設定期限)。</p>
+        
+        <!-- 展開按鈕 (預設隱藏) -->
+        <button type="button" id="toggle-list-btn" style="display: none;">⬇️ 展開紀錄列表</button>
+
+        <!-- 列表與分頁容器 -->
+        <div id="list-wrapper">
+            <!-- 分頁控制項 -->
+            <div id="pagination-controls" class="pagination-container" style="display: none;">
+                <button id="prev-page-btn">◀</button>
+                <span id="page-info">1-10 (YY/MM/DD)</span>
+                <button id="next-page-btn">▶</button>
+            </div>
+
+            <!-- 實際列表 -->
+            <div id="record-list"></div>
+        </div>
+
         <div id="info-panel" style="display: none;"><p id="info-text"></p></div>
+        
         <form id="edit-form" style="display: none;">
             <h3>修改資料</h3>
-            <div class="form-group"><label for="edit-mileage">公里數</label><input type="number" id="edit-mileage" inputmode="numeric"></div>
-            <div class="form-group"><label for="edit-gas">加油公升</label><input type="number" id="edit-gas" inputmode="decimal" step="0.0001" value="0" placeholder="可輸入小數點了" ></div>
-            <div class="form-group"><label for="edit-notes">備註</label><input type="text" id="edit-notes"></div>
-            <button type="submit">儲存修改</button>
-            <button type="button" id="void-btn" style="background-color: var(--error-color); color: white; margin-left: 10px;">作廢此紀錄</button>
+            <div class="form-group">
+                <label for="edit-mileage">公里數</label>
+                <input type="number" id="edit-mileage" inputmode="numeric">
+            </div>
+            <div class="form-group">
+                <label for="edit-gas">加油公升 (L)</label>
+                <input type="number" id="edit-gas" inputmode="decimal" step="0.0001" placeholder="可輸入至小數點後4位">
+            </div>
+            <div class="form-group">
+                <label for="edit-notes">備註</label>
+                <input type="text" id="edit-notes">
+            </div>
+            
+            <div class="modal-buttons" style="margin-top: 20px; justify-content: flex-start;">
+                <button type="submit" class="ok-btn">儲存修改</button>
+                <button type="button" id="void-btn" style="background-color: var(--error-color); color: white; margin-left: 10px;">標記事後取消</button>
+            </div>
         </form>
     </div>
-    <div id="custom-alert-modal" class="modal-overlay"><div class="modal-content"><h4 id="alert-title"></h4><p id="alert-text"></p><div class="modal-buttons"><button id="alert-ok-btn" class="ok-btn">關閉</button></div></div></div>
-    <div id="custom-confirm-modal" class="modal-overlay"><div class="modal-content"><h4 id="confirm-title"></h4><p id="confirm-text"></p><div class="modal-buttons"><button id="confirm-ok-btn" class="ok-btn">確定</button><button id="confirm-cancel-btn" class="cancel-btn">取消</button></div></div></div>
+
+    <!-- 全域模態視窗 -->
+    <div id="custom-confirm-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h4 id="confirm-title">確認操作</h4>
+            <p id="confirm-text"></p>
+            <div class="modal-buttons">
+                <button id="confirm-ok-btn" class="ok-btn">確定</button>
+                <button id="confirm-cancel-btn" class="cancel-btn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="custom-alert-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h4 id="alert-title">系統訊息</h4>
+            <p id="alert-text"></p>
+            <div class="modal-buttons">
+                <button id="alert-ok-btn" class="ok-btn">關閉</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         loadJS(['./js/main.js', './js/history.js'], () => { initializeHistoryPage(); });
